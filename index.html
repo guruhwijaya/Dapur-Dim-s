@@ -3,22 +3,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rekapan Tagihan</title>
 <meta name="theme-color" content="#12a150">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest?v=2">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Dim's">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dapur Dim's"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Dapur Dim’s"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-title" content="Dapur Dim’s">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lobster&family=Pacifico&family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#eef1f5;--card:#fff;--tx:#14171a;--mut:#6b7280;--bd:#e1e5ea;--ac:#12a150;--sh:0 4px 16px rgba(20,30,50,.08)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1214;--card:#1b1f23;--tx:#f1f3f5;--mut:#9aa3ad;--bd:#2d333a;--sh:0 4px 16px rgba(0,0,0,.4)}}
@@ -94,14 +88,14 @@ input,select,textarea{flex:1;min-width:0;padding:12px;border:1px solid var(--bd)
 .uc{color:#111;border-color:rgba(0,0,0,.12)}.uc .hint{color:#2b2b2b}.uc .hb button{background:rgba(255,255,255,.75);color:#111;border-color:rgba(0,0,0,.15)}
 .chips{display:flex;gap:6px;margin-bottom:8px}.chips button{flex:1;padding:9px 2px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font-weight:700;font-size:12.5px}
 .age{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:99px;background:rgba(0,0,0,.12);font-size:11px;font-weight:700}.age.w{background:#ffb300;color:#111}.age.d{background:#c62828;color:#fff}
-.logo{font-family:'Pacifico','Lobster','Brush Script MT','Segoe Script',cursive;font-size:30px;line-height:1.15;background:linear-gradient(90deg,#ff7a18,#e8333a 55%,#b0125b);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 3px rgba(232,51,58,.25));margin-bottom:2px}
+.logo{font-family:'Lobster','Pacifico','Brush Script MT','Segoe Script',cursive;font-size:32px;line-height:1.15;color:#fff;-webkit-text-fill-color:#fff;background:none;filter:none;margin-bottom:2px;letter-spacing:.5px;text-shadow:-1px -1px 0 rgba(0,0,0,.22),1px 1px 0 #e0b87e,2px 2px 0 #e0b87e,3px 3px 0 #d2a265,4px 4px 0 #d2a265,5px 5px 0 #c4925a,6px 7px 8px rgba(0,0,0,.35)}
 #gate{display:none;position:fixed;inset:0;z-index:100;background:var(--bg);align-items:center;justify-content:center;padding:20px}.gb2{width:100%;max-width:340px;text-align:center}.gb2 input{width:100%;margin-bottom:10px;text-align:center;font-size:22px;letter-spacing:6px}.gb2 p{color:var(--mut)}#gm{color:#c62828;font-size:13px;min-height:18px;margin-top:8px}
 #gate{background:radial-gradient(circle at 18% 14%,#ff9a3c 0,transparent 42%),radial-gradient(circle at 88% 22%,#e8333a 0,transparent 48%),radial-gradient(circle at 50% 105%,#b0125b 0,transparent 62%),linear-gradient(160deg,#2b0b1a,#5a1230 55%,#a1223a);overflow:hidden}
 #gate .fl{position:absolute;font-size:36px;opacity:.3;animation:fl 9s ease-in-out infinite;pointer-events:none;user-select:none}
 @keyframes fl{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-28px) rotate(10deg)}}
 .gb2{position:relative;z-index:2;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.3);border-radius:26px;padding:30px 22px;box-shadow:0 20px 50px rgba(0,0,0,.45)}
 .gb2 p{color:#ffe9d6}.gb2 input{background:rgba(255,255,255,.93);color:#222;border:0}
-.gb2 .logo{font-size:40px;background:linear-gradient(90deg,#ffd27a,#fff 55%,#ffb199);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+.gb2 .logo{font-size:44px;background:none;-webkit-text-fill-color:#fff;color:#fff;filter:none;text-shadow:1px 1px 0 #e0b87e,2px 2px 0 #e0b87e,3px 3px 0 #d2a265,4px 4px 0 #d2a265,5px 5px 0 #c4925a,6px 7px 10px rgba(0,0,0,.5)}
 .mc{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}.mc button{position:relative;padding:8px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);font-weight:700;font-size:12.5px;text-align:center}.mc small{font-weight:600;color:var(--mut)}.cb{position:absolute;top:-9px;right:-7px;background:#e8333a;color:#fff;border-radius:99px;font-size:11px;padding:3px 8px}
 .pane{display:none}.pane.on{display:block}
 body{padding-bottom:96px}
@@ -187,7 +181,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac);box-sha
 #mst #mp .card{margin-bottom:10px}
 body:has(#p4.on) #stk{box-shadow:none}
 </style></head><body>
-<div id="stk"><div class="top"><div class="brand"><div class="logo"><img src="icon-192.png" alt="" style="width:36px;height:36px;border-radius:10px;vertical-align:middle;margin-right:8px">Dapur Dim’s</div><b>📒 Rekapan Tagihan</b><span>Catat, rekap, bagikan sebagai nota</span><span id="sy" style="display:block;margin-top:2px"></span></div>
+<div id="stk"><div class="top"><div class="brand"><div class="logo" style="display:flex;align-items:center;gap:8px"><img src="logo.png?v=2" alt="" style="height:46px;width:auto;flex:none">Dapur Dim’s</div><b>📒 Rekapan Tagihan</b><span>Catat, rekap, bagikan sebagai nota</span><span id="sy" style="display:block;margin-top:2px"></span></div>
 <div class="ur"><button id="un" title="Undo">↶</button><button id="re" title="Redo">↷</button><button data-a="mo" title="Menu lainnya">⋯</button></div></div>
 <div id="bn"></div>
 <div class="tabs" id="tabs"></div></div>
@@ -667,9 +661,9 @@ function sub(mode){var m=document.getElementById('gm'),v=document.getElementById
  if(!/^\d{4,8}$/.test(v)){m.textContent='PIN harus 4-8 angka';return}
  if(mode=='set'){if(v!=document.getElementById('gp2').value){m.textContent='PIN tidak sama';return}sha(v).then(function(h){setPin(h);unlock(h)});return}
  sha(v).then(function(h){if(h==(remoteH||pinH))unlock(h);else{m.textContent='PIN salah';document.getElementById('gp').value=''}})}
-var FL=[['<img src="icon-192.png" alt="" style="width:1.15em;height:1.15em;vertical-align:-.18em;border-radius:24%;margin-right:2px">',6,10,0],['🍜',80,8,1.5],['🥘',10,34,3],['🍰',84,38,4.5],['🍤',8,64,2],['🧁',82,66,5.5],['🍲',14,86,1],['🥟',76,88,3.5]].map(function(f){return '<span class="fl" style="left:'+f[1]+'%;top:'+f[2]+'%;animation-delay:'+f[3]+'s">'+f[0]+'</span>'}).join('');
+var FL=[['<img src="logo.png?v=2" alt="" style="width:1.15em;height:1.15em;vertical-align:-.18em;border-radius:24%;margin-right:2px">',6,10,0],['🍜',80,8,1.5],['🥘',10,34,3],['🍰',84,38,4.5],['🍤',8,64,2],['🧁',82,66,5.5],['🍲',14,86,1],['🥟',76,88,3.5]].map(function(f){return '<span class="fl" style="left:'+f[1]+'%;top:'+f[2]+'%;animation-delay:'+f[3]+'s">'+f[0]+'</span>'}).join('');
 function gate(mode){var g=document.getElementById('gate');if(gMode=='view'&&mode!='view')return;if(gMode==mode&&g.style.display=='flex')return;gMode=mode;g.style.display='flex';
- g.innerHTML=FL+'<div class="gb2"><div class="logo" style="margin-bottom:10px"><img src="icon-192.png" alt="" style="width:76px;height:76px;border-radius:20px;display:block;margin:0 auto 8px;box-shadow:0 6px 18px rgba(0,0,0,.25)">Dapur Dim’s</div><p>'+(mode=='set'?'Buat PIN untuk mengunci aplikasi (4-8 angka)':mode=='wait'?'Menghubungkan…':'')+'</p>'+(mode=='wait'?'':'<input type="password" id="gp" inputmode="numeric" maxlength="8" placeholder="PIN" autocomplete="off">'+(mode=='set'?'<input type="password" id="gp2" inputmode="numeric" maxlength="8" placeholder="Ulangi PIN" autocomplete="off">':'')+'<button class="add" id="gok">'+(mode=='set'?'Simpan PIN':'Buka')+'</button><div id="gm"></div>'+(mode=='enter'?GV():''))+'</div>';
+ g.innerHTML=FL+'<div class="gb2"><div class="logo" style="margin-bottom:10px"><img src="logo.png?v=2" alt="" style="width:130px;height:auto;display:block;margin:0 auto 8px">Dapur Dim’s</div><p>'+(mode=='set'?'Buat PIN untuk mengunci aplikasi (4-8 angka)':mode=='wait'?'Menghubungkan…':'')+'</p>'+(mode=='wait'?'':'<input type="password" id="gp" inputmode="numeric" maxlength="8" placeholder="PIN" autocomplete="off">'+(mode=='set'?'<input type="password" id="gp2" inputmode="numeric" maxlength="8" placeholder="Ulangi PIN" autocomplete="off">':'')+'<button class="add" id="gok">'+(mode=='set'?'Simpan PIN':'Buka')+'</button><div id="gm"></div>'+(mode=='enter'?GV():''))+'</div>';
  if(mode!='wait'){document.getElementById('gok').onclick=function(){sub(mode)};document.getElementById('gp').onkeydown=function(e){if(e.key=='Enter')sub(mode)}}}
 function sheetUrl(){try{return localStorage.getItem('rekapan_su')||''}catch(e){return ''}}
 function sheetKey(){try{return localStorage.getItem('rekapan_sk')||''}catch(e){return ''}}
