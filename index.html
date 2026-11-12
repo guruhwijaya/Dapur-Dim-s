@@ -306,7 +306,7 @@ function rcc(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,
 function hari(d){var p=d.split('-');return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date(+p[0],+p[1]-1,+p[2]).getDay()]}
 function seqNo(){st.seq=(st.seq||0)+1;save();return st.seq}
 function alamat(){var d='JL DR Soetomo 73 Junrejo - Batu';try{return localStorage.getItem('rekapan_al')||d}catch(e){return d}}
-function shareC(c){var url=c.toDataURL('image/jpeg',.92);c.toBlob(function(b){var f=new File([b],'nota.jpg',{type:'image/jpeg'});LN={url:url,file:f};if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){pvm(url)})}else pvm(url)},'image/jpeg',.92)}
+function shareC(c){var url=c.toDataURL('image/jpeg',.92);c.toBlob(function(b){var f=new File([b],'nota.jpg',{type:'image/jpeg'});LN={url:url,file:f};pvm(url)},'image/jpeg',.92)}
 function ser(uid){var A=(st.data[uid]||[]).slice();if((st.carry[uid]||0)>0)st.hist.forEach(function(h){if(h.u==uid&&h.cf>0)A=A.concat(h.e)});return A}
 function frz(uid){var A=srt(ser(uid));A.forEach(function(e,k){if(e.tx){var x=fnd(st.trx,String(e.tx));if(x)x.rn=k+1}})}
 function rowNo(uid,d,s,tid){var A=ser(uid);
@@ -452,7 +452,21 @@ function spec(n,c,E,P,cr,crp){cr=cr||0;crp=crp||0;var T=sumE(E)+cr,by=sumP(P),kk
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 function modal(h){var o=document.getElementById('ov'),op=o.style.display=='block',sc0=o.scrollTop;o.innerHTML='<div class="mdl'+(op?'':' in')+'">'+h+'<button class="mbtn" data-a="cl">Tutup</button></div>';o.style.display='block';o.scrollTop=op?sc0:0}
 var LN=null;
-function pvm(u){modal('<p>Tekan lama gambar untuk menyimpan, atau pakai tombol di bawah</p><img src="'+u+'"><button class="mbtn go" data-a="ns">📤 Bagikan gambar</button><button class="mbtn" data-a="nd">⬇️ Simpan gambar</button><p id="nm"></p>')}
+var BT={d:null,c:null};
+function btW(){try{return parseInt(localStorage.getItem('rekapan_pw'))||384}catch(e){return 384}}
+function btChar(){if(BT.c&&BT.d&&BT.d.gatt.connected)return Promise.resolve(BT.c);
+ var S=['0000ffe0-0000-1000-8000-00805f9b34fb','49535343-fe7d-4ae5-8fa9-9fafd205e455','000018f0-0000-1000-8000-00805f9b34fb','e7810a71-73ae-499d-8c15-faa9aef0c3f2','0000ff00-0000-1000-8000-00805f9b34fb','0000fee7-0000-1000-8000-00805f9b34fb'];
+ var p=BT.d?Promise.resolve(BT.d):navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:S});
+ return p.then(function(d){BT.d=d;return d.gatt.connect()}).then(function(g){return g.getPrimaryServices()}).then(function(sv){var i=0;function nx(){if(i>=sv.length)throw new Error('nochar');return sv[i++].getCharacteristics().then(function(cs){for(var k=0;k<cs.length;k++){var q=cs[k].properties;if(q.writeWithoutResponse||q.write)return cs[k]}return nx()})}return nx()}).then(function(c){BT.c=c;return c})}
+function btBytes(url,W){return new Promise(function(ok,no){var im=new Image();im.onerror=no;im.onload=function(){var h=Math.round(im.height*W/im.width),c=document.createElement('canvas');c.width=W;c.height=h;var g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,W,h);g.drawImage(im,0,0,W,h);var d=g.getImageData(0,0,W,h).data,wb=W/8,o=[0x1b,0x40];
+ for(var y0=0;y0<h;y0+=128){var bh=Math.min(128,h-y0);o.push(0x1d,0x76,0x30,0,wb&255,wb>>8,bh&255,bh>>8);for(var y=y0;y<y0+bh;y++)for(var xb=0;xb<wb;xb++){var b=0;for(var k=0;k<8;k++){var i=(y*W+xb*8+k)*4,l=.299*d[i]+.587*d[i+1]+.114*d[i+2];b=(b<<1)|(l<150?1:0)}o.push(b)}}
+ o.push(0x1b,0x64,4);ok(new Uint8Array(o))};im.src=url})}
+function btSend(ch,u8){var i=0,wr=ch.properties.writeWithoutResponse?'writeValueWithoutResponse':'writeValue';return new Promise(function(ok,no){(function nx(){if(i>=u8.length)return ok();var part=u8.slice(i,i+100);i+=100;ch[wr](part).then(function(){setTimeout(nx,25)}).catch(no)})()})}
+function btPrint(){var m=document.getElementById('nm');if(!LN)return;
+ if(!navigator.bluetooth){m.textContent='Browser ini tidak mendukung Bluetooth langsung. Pakai Chrome di Android, atau tombol Cetak nota + aplikasi RawBT.';return}
+ m.textContent='Memilih printer…';
+ btChar().then(function(c){m.textContent='Mengirim ke printer…';return btBytes(LN.url,btW()).then(function(u){return btSend(c,u)})}).then(function(){m.textContent='Selesai dicetak ✓'}).catch(function(e){BT.c=null;m.textContent=(e&&e.name=='NotFoundError')?'Dibatalkan.':(e&&e.message=='nochar')?'Printer ini tidak mendukung cetak langsung (bukan BLE). Pakai tombol Cetak nota + aplikasi RawBT.':'Gagal terhubung/mencetak: '+((e&&e.message)||e)})}
+function pvm(u){modal('<p>Tekan lama gambar untuk menyimpan, atau pakai tombol di bawah</p><img src="'+u+'"><button class="mbtn go" data-a="ns">📤 Bagikan gambar</button><button class="mbtn go" data-a="nb">🖨️ Cetak ke printer Bluetooth</button><button class="mbtn" data-a="np">🖨️ Cetak nota</button><button class="mbtn" data-a="nd">⬇️ Simpan gambar</button><p id="nm"></p>')}
 function nota(sp){
  var W=720,pd=24,hh=110,fh=84,ph=56,F='system-ui,Arial,sans-serif',RH=sp.rows.map(function(r){return r.note?72:56});
  var cH=76+hh+RH.reduce(function(a,b){return a+b},0)+sp.pays.length*ph+fh,H=cH+2*pd+62;
@@ -478,8 +492,7 @@ function nota(sp){
  g.fillStyle='#9ca3af';g.font='16px '+F;g.fillText('Dicetak '+new Date().toLocaleDateString('id-ID'),W/2,H-12);
  var url=c.toDataURL('image/jpeg',.92);
  c.toBlob(function(b){var f=new File([b],'rekapan.jpg',{type:'image/jpeg'});LN={url:url,file:f};
-  if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){pvm(url)})}
-  else pvm(url)},'image/jpeg',.92)}
+  pvm(url)},'image/jpeg',.92)}
 function months(){var m={};st.lun.concat(st.hist).forEach(function(h){m[h.at.slice(0,7)]=1});return Object.keys(m).sort().reverse()}
 function ml(k){var p=k.split('-');return MO[+p[1]-1]+' '+p[0]}
 function inM(h){return !fm||h.at.slice(0,7)==fm}
@@ -529,6 +542,8 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  else if(a=='gi'){var G=window.GT;nota({title:'TOTAL KESELURUHAN',sub:st.units.map(function(q){return q.n}).join(' · '),color:'#9fe3b0',rows:G.rows,pays:[],fl:G.all?'LUNAS ✓':(G.P>0?(G.K>=0?'TOTAL KURANG':'TOTAL LEBIH'):'TOTAL'),fv:G.all?rp(G.G):rp(G.P>0?Math.abs(G.K):G.G),fbg:G.all?'#12803c':(G.P>0?'#c62828':'#111'),fcol:G.P>0&&!G.all?'#ffe66d':'#fff'})}
  else if(a=='gt'){var G=window.GT,s='TOTAL KESELURUHAN\n\n';GT.rows.forEach(function(r){s+=r.l+' = '+r.r+'\n'});s+=G.all?'\nSTATUS: LUNAS SEMUA ✓':(G.P>0?'\nTOTAL '+(G.K>=0?'KURANG':'LEBIH')+' = '+rp(Math.abs(G.K)):'\nTOTAL = '+rp(G.G));shr(s)}
  else if(a=='ns'){var m=document.getElementById('nm');if(LN&&navigator.share&&navigator.canShare&&navigator.canShare({files:[LN.file]})){navigator.share({files:[LN.file]}).catch(function(){m.textContent='Bagikan dibatalkan atau tidak diizinkan di sini. Tekan lama gambar untuk menyimpan.'})}else m.textContent='Fitur bagikan tidak tersedia di tampilan ini. Tekan lama gambar lalu Simpan, atau buka link ini di Chrome atau Brave.'}
+ else if(a=='nb'){btPrint()}
+ else if(a=='np'){if(!LN)return;var fr=document.createElement('iframe');fr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(fr);var pd=fr.contentWindow.document;pd.open();pd.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Nota</title><style>@page{margin:5mm}html,body{margin:0;text-align:center}img{max-width:100%;height:auto}</style></head><body><img src="'+LN.url+'"></body></html>');pd.close();var pim=pd.querySelector('img'),pgo=function(){try{fr.contentWindow.focus();fr.contentWindow.print()}catch(e){window.print()}setTimeout(function(){fr.remove()},60000)};if(pim.complete)pgo();else pim.onload=pgo}
  else if(a=='nd'){var m2=document.getElementById('nm');if(!LN)return;var an=document.createElement('a');an.href=LN.url;an.download='rekapan.jpg';document.body.appendChild(an);an.click();an.remove();m2.textContent='Jika tidak terunduh, tekan lama gambar lalu pilih Simpan.'}
  else if(a=='cx'){snap();st.carry[st.u]=0;st.carryP[st.u]=0;save();render()}
  else if(a=='mn'){var it2=[],T2=0;['makan','minum','add'].forEach(function(k){st.menu[k].forEach(function(m){var q=cart[m.id];if(q){T2+=m.p*q;it2.push({n:m.n,q:q,p:m.p})}})});if(!it2.length)return;var u2=mMode=='other'?{id:'other',n:((mpemX||'').trim()||'Pelanggan lain'),c:'#9aa3ad'}:cu(),bv=parseFloat(mbayV)||0;if(bv>0&&bv<1000)bv*=1000;notaR({items:it2,T:T2,unit:u2,date:mdD||td(),shift:mdS||curS(),pem:pemN(u2),oth:(mMode=='other'||(EMO[u2.id]&&mpem=='__x'))?1:0,ket:(mMode=='other'||(EMO[u2.id]&&mpem=='__x'))?mKet:'',bay:bv,no:(mNo||(mNo=seqNo())),rn:rowNo(u2.id,mdD||td(),mdS||curS())})}
@@ -619,7 +634,7 @@ document.addEventListener('change',function(ev){var t=ev.target;
 function dtS(){document.getElementById('dts').textContent='📅 '+fl(di.value)+' · '+document.getElementById('s').value}
 function autoDT(){di.value=td();var hr=new Date().getHours();document.getElementById('s').value=hr<11?'Pagi':hr<15?'Siang':hr<18?'Sore':'Malam';dtS()}
 var tabN=1;
-function nav(n){tabN=n;document.getElementById('fab').style.display=n==4?'block':'none';[1,2,3,4,5].forEach(function(k){document.getElementById('p'+k).className='pane'+(k==n?' on':'');var b=document.querySelector('#nv [data-i="'+k+'"]');if(b)b.className=k==n?'on':''});window.scrollTo(0,0)}
+function nav(n){tabN=n;document.getElementById('tabs').style.display=(n==2||n==5)?'none':'';document.getElementById('fab').style.display=n==4?'block':'none';[1,2,3,4,5].forEach(function(k){document.getElementById('p'+k).className='pane'+(k==n?' on':'');var b=document.querySelector('#nv [data-i="'+k+'"]');if(b)b.className=k==n?'on':''});window.scrollTo(0,0)}
 function mo(){modal('<h3>Menu lainnya</h3><div class="mo"><button data-a="sv">📥 Simpan rekapan unit ini</button><button data-a="mg">⚙️ Kelola unit &amp; nama usaha</button><button data-a="mm">🍽️ Kelola menu</button><button data-a="bk">💾 Cadangan &amp; ekspor</button><button data-a="lk">🔒 Kunci aplikasi</button></div><p>Simpan rekapan memindahkan tabel unit ini ke Riwayat dan mengosongkannya.</p>')}
 var di=document.getElementById('d'),pd=document.getElementById('pd');pd.value=td();autoDT();di.onchange=dtS;document.getElementById('s').onchange=dtS;
 document.getElementById('add').onclick=function(){
