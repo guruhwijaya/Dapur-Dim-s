@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Dapur Dim’s">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lobster&family=Pacifico&family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lobster&family=Pacifico&family=Kaushan+Script&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#eef1f5;--card:#fff;--tx:#14171a;--mut:#6b7280;--bd:#e1e5ea;--ac:#12a150;--sh:0 4px 16px rgba(20,30,50,.08)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1214;--card:#1b1f23;--tx:#f1f3f5;--mut:#9aa3ad;--bd:#2d333a;--sh:0 4px 16px rgba(0,0,0,.4)}}
@@ -318,12 +318,12 @@ function tchg(a,b){var m={},P={},add=[],del=[];function k(i){return i.n+'|'+i.p}
 function chgH(c){if(!c)return 0;var n=0;['add','del'].forEach(function(k){if(c[k]&&c[k].length)n+=c[k].length*34+42});return n?n+60:0}
 function nrr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
 function notaR(o){
- if(!window._nf&&document.fonts&&document.fonts.load){window._nf=1;var fl=function(){notaR(o)};Promise.all([document.fonts.load('68px "Great Vibes"'),document.fonts.load('400 22px Poppins'),document.fonts.load('500 22px Poppins'),document.fonts.load('600 22px Poppins')]).then(fl,fl);return}
+ if(!window._nf&&document.fonts&&document.fonts.load){window._nf=1;var fl=function(){notaR(o)};Promise.all([document.fonts.load('60px "Kaushan Script"'),document.fonts.load('400 22px Poppins'),document.fonts.load('500 22px Poppins'),document.fonts.load('600 22px Poppins')]).then(fl,fl);return}
  var W=680,pd=58,F='Poppins,Roboto,system-ui,Arial,sans-serif',H=820+o.items.length*100+chgH(o.chg),c=document.createElement('canvas');c.width=W;c.height=H;var g=c.getContext('2d');
  var INK='#1c1c1e',MUT='#8b8578',GOLD='#b08d57',LN='#d9d1c1',GRN='#2e7d4f',RED='#c0392b',nm=usaha()=="DIM'S"?"Dapur Dim's":usaha(),now=new Date(),tm=o.tm||now.toTimeString().slice(0,8),y=112;
  function ln(){g.save();g.strokeStyle=LN;g.lineWidth=2;g.setLineDash([2,8]);g.lineCap='round';g.beginPath();g.moveTo(pd,y);g.lineTo(W-pd,y);g.stroke();g.restore()}
  function row(l,r,font,col){g.font=font;g.fillStyle=col||INK;g.textAlign='left';g.fillText(l,pd,y);g.textAlign='right';g.fillText(r,W-pd,y)}
- g.textAlign='center';g.fillStyle=INK;g.font='68px "Great Vibes",cursive';g.fillText('North Joenstone',W/2,y);y+=36;
+ g.textAlign='center';g.fillStyle=INK;var tf=62;g.font=tf+'px "Kaushan Script",cursive';while(g.measureText('North Joenstone').width>W-2*pd&&tf>30){tf--;g.font=tf+'px "Kaushan Script",cursive'}g.fillText('North Joenstone',W/2,y);y+=36;
  g.strokeStyle=GOLD;g.lineWidth=2;g.beginPath();g.moveTo(W/2-96,y);g.lineTo(W/2-14,y);g.moveTo(W/2+14,y);g.lineTo(W/2+96,y);g.stroke();
  g.fillStyle=GOLD;g.beginPath();g.moveTo(W/2,y-6);g.lineTo(W/2+6,y);g.lineTo(W/2,y+6);g.lineTo(W/2-6,y);g.closePath();g.fill();y+=52;
  g.textAlign='left';g.font='400 22px '+F;g.fillStyle=MUT;g.fillText(o.date,pd,y);g.textAlign='right';g.fillStyle=INK;g.font='600 24px '+F;g.fillText(nm,W-pd,y);y+=34;
@@ -341,7 +341,7 @@ function notaR(o){
  var ket=o.oth?(o.ket||'').trim():((EMO[u.id]||'🔹')+' '+nm2+' ❌ '+o.shift.toUpperCase()+' ('+hari(o.date)+') '+(o.pem||'')).trim(),fs2=23;
  g.textAlign='center';g.fillStyle=INK;g.font='500 '+fs2+'px '+F;while(g.measureText(ket).width>W-2*pd&&fs2>13){fs2--;g.font='500 '+fs2+'px '+F}
  if(ket){g.fillText(ket,W/2,y);y+=70}else y+=24;
- g.fillStyle=GOLD;g.font='46px "Great Vibes",cursive';g.fillText('Terima kasih',W/2,y);y+=40;
+ g.fillStyle=GOLD;g.font='38px "Kaushan Script",cursive';g.fillText('Terima kasih',W/2,y);y+=40;
  g.fillStyle=MUT;g.font='400 16px '+F;g.fillText("©Dim's 081993360992",W/2,y);y+=20;
  var Hf=y+52,c2=document.createElement('canvas');c2.width=W;c2.height=Hf;var g2=c2.getContext('2d');
  g2.fillStyle='#ece8df';g2.fillRect(0,0,W,Hf);
@@ -353,9 +353,18 @@ function rtr(){var o=document.getElementById('tr');if(!o)return;var le=document.
  if(!trP){var M=[['day','Laporan transaksi hari ini'],['month','Laporan transaksi bulan ini'],['year','Laporan transaksi tahun ini'],['all','Laporan semua transaksi']];
   o.innerHTML='<div class="sec" style="margin-top:4px">Laporan Transaksi</div><div class="card" style="padding:0 12px">'+M.map(function(z){var L=trf(z[0],'');return '<div class="mrow" data-a="trp" data-i="'+z[0]+'"><div style="font-size:26px">📊</div><div class="mn"><b>'+z[1]+'</b><small>'+L.length+' transaksi · '+rp(sumT(L))+'</small></div><span style="color:var(--mut);font-size:22px">›</span></div>'}).join('')+'</div><p class="hint" style="text-align:center">Nota tersimpan otomatis di sini saat kamu menekan Tambah ke tagihan di tab Menu.</p>';return}
  var L=trf(trP,trU),ag={},tt={day:'hari ini',month:'bulan ini',year:'tahun ini',all:'semua transaksi'};
+ var LV=trP=='all'?[4,7,10]:trP=='year'?[7,10]:[];
+ function gl(k){return k.length==4?k:k.length==7?MO[+k.slice(5)-1].charAt(0)+MO[+k.slice(5)-1].slice(1).toLowerCase()+' '+k.slice(0,4):fl(k)}
+ if(LV.length){var dp=trK.length;if(dp)L=L.filter(function(x){return x.d.indexOf(trK[dp-1])==0});
+  if(dp<LV.length){var G={},ks;L.forEach(function(x){var k=x.d.slice(0,LV[dp]);(G[k]||(G[k]=[])).push(x)});ks=Object.keys(G).sort().reverse();
+   var h0='<div class="hi" style="margin:4px 0 12px"><button class="cn2" data-a="trb">‹ Kembali</button><b style="font-size:14px">Laporan transaksi '+tt[trP]+(trK.length?' › '+gl(trK[dp-1]):'')+'</b></div>';
+   h0+='<div class="seg" style="overflow-x:auto">'+[['','Semua']].concat(st.units.map(function(u){return [u.id,u.n]}).concat([['other','Umum']])).map(function(z){return '<button data-a="tru" data-i="'+z[0]+'"'+(trU==z[0]?' class="on"':'')+' style="white-space:nowrap;padding:9px 10px">'+esc(z[1])+'</button>'}).join('')+'</div>';
+   h0+='<div class="card"><div class="lts"><div class="lt"><small>Transaksi</small><b>'+L.length+'</b></div><div class="lt"><small>Total penjualan</small><b>'+rp(sumT(L))+'</b></div></div></div>';
+   h0+=ks.length?'<div class="card" style="padding:0 12px">'+ks.map(function(k){return '<div class="mrow" data-a="trg" data-i="'+k+'"><div style="font-size:26px">'+(dp==LV.length-1?'🗓️':'📅')+'</div><div class="mn"><b>'+gl(k)+'</b><small>'+G[k].length+' transaksi · '+rp(sumT(G[k]))+'</small></div><span style="color:var(--mut);font-size:22px">›</span></div>'}).join('')+'</div>':'<div class="card"><p class="hint" style="text-align:center">Belum ada transaksi.</p></div>';
+   o.innerHTML=h0;return}}
  L.forEach(function(x){x.items.forEach(function(i){var a=ag[i.n]||(ag[i.n]={q:0,v:0});a.q+=i.q;a.v+=i.q*i.p})});
  var top=Object.keys(ag).sort(function(a,b){return ag[b].v-ag[a].v}).slice(0,8);
- var h='<div class="hi" style="margin:4px 0 12px"><button class="cn2" data-a="trb">‹ Kembali</button><b style="font-size:14px">Laporan transaksi '+tt[trP]+'</b></div>';
+ var h='<div class="hi" style="margin:4px 0 12px"><button class="cn2" data-a="trb">‹ Kembali</button><b style="font-size:14px">Laporan transaksi '+tt[trP]+(trK.length?' › '+gl(trK[trK.length-1]):'')+'</b></div>';
  h+='<div class="seg" style="overflow-x:auto">'+[['','Semua']].concat(st.units.map(function(u){return [u.id,u.n]}).concat([['other','Umum']])).map(function(z){return '<button data-a="tru" data-i="'+z[0]+'"'+(trU==z[0]?' class="on"':'')+' style="white-space:nowrap;padding:9px 10px">'+esc(z[1])+'</button>'}).join('')+'</div>';
  h+='<div class="card"><div class="lts"><div class="lt"><small>Transaksi</small><b>'+L.length+'</b></div><div class="lt"><small>Total penjualan</small><b>'+rp(sumT(L))+'</b></div></div></div>';
  if(top.length)h+='<div class="card"><div class="ct"><span>🍽️ Menu terjual</span></div>'+top.map(function(k){return '<div class="vr2"><span>'+esc(k)+' ×'+ag[k].q+'</span><b>'+rp(ag[k].v)+'</b></div>'}).join('')+'</div>';
@@ -386,7 +395,7 @@ function mmod(){var h='<h3>🍽️ Kelola menu</h3><div style="text-align:left">
  [['makan','🍛 Makan'],['minum','🥤 Minum'],['add','➕ Add']].forEach(function(g){h+='<div class="ct" style="margin-top:8px">'+g[1]+'</div>';st.menu[g[0]].forEach(function(m){h+='<div class="mu"><input type="text" value="'+esc(m.n)+'" data-a="mn" data-i="'+m.id+'"><input type="number" value="'+m.p+'" data-a="mpr" data-i="'+m.id+'" style="max-width:100px"><button data-a="mx" data-i="'+m.id+'">✕</button></div>'})});
  h+='</div>';
  modal(h)}
-var lpP='day',lpU='',lpL=12,mfq='',mcat='',mdD='',mdS='',mpem='Rizal',mpemX='',mKet='',mMode='unit',mbayV='',mNo=0,trP=null,trU='',trL=30;
+var lpP='day',lpU='',lpL=12,mfq='',mcat='',mdD='',mdS='',mpem='Rizal',mpemX='',mKet='',mMode='unit',mbayV='',mNo=0,trP=null,trU='',trL=30,trK=[];
 try{mpem=localStorage.getItem('rekapan_pem')||'Rizal'}catch(e){}
 if(mpem=='__x')mpem='Rizal';
 try{mpemX=localStorage.getItem('rekapan_pemx')||''}catch(e){}
@@ -523,8 +532,9 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  else if(a=='nd'){var m2=document.getElementById('nm');if(!LN)return;var an=document.createElement('a');an.href=LN.url;an.download='rekapan.jpg';document.body.appendChild(an);an.click();an.remove();m2.textContent='Jika tidak terunduh, tekan lama gambar lalu pilih Simpan.'}
  else if(a=='cx'){snap();st.carry[st.u]=0;st.carryP[st.u]=0;save();render()}
  else if(a=='mn'){var it2=[],T2=0;['makan','minum','add'].forEach(function(k){st.menu[k].forEach(function(m){var q=cart[m.id];if(q){T2+=m.p*q;it2.push({n:m.n,q:q,p:m.p})}})});if(!it2.length)return;var u2=mMode=='other'?{id:'other',n:((mpemX||'').trim()||'Pelanggan lain'),c:'#9aa3ad'}:cu(),bv=parseFloat(mbayV)||0;if(bv>0&&bv<1000)bv*=1000;notaR({items:it2,T:T2,unit:u2,date:mdD||td(),shift:mdS||curS(),pem:pemN(u2),oth:(mMode=='other'||(EMO[u2.id]&&mpem=='__x'))?1:0,ket:(mMode=='other'||(EMO[u2.id]&&mpem=='__x'))?mKet:'',bay:bv,no:(mNo||(mNo=seqNo())),rn:rowNo(u2.id,mdD||td(),mdS||curS())})}
- else if(a=='trp'){trP=i;trL=30;trU='';rtr()}
- else if(a=='trb'){trP=null;rtr()}
+ else if(a=='trp'){trP=i;trL=30;trU='';trK=[];rtr()}
+ else if(a=='trg'){trK.push(i);trL=30;rtr()}
+ else if(a=='trb'){if(trK.length){trK.pop();trL=30}else trP=null;rtr()}
  else if(a=='tru'){trU=i;trL=30;rtr()}
  else if(a=='trm'){trL+=30;rtr()}
  else if(a=='trd')trdet(i);
