@@ -180,8 +180,19 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac);box-sha
 #mst #mp{max-height:30vh;overflow-y:auto;overscroll-behavior:contain}
 #mst #mp .card{margin-bottom:10px}
 body:has(#p4.on) #stk{box-shadow:none}
+
+/* ===== header ringkas & tombol tambah menu ===== */
+#stk .top{align-items:center;gap:6px}
+.brand{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.brand .bl{height:44px;width:auto;flex:none}
+.brand .bt{min-width:0}
+.brand .bt .logo{font-size:24px;line-height:1.1;margin:0;white-space:nowrap}
+#stk .brand #sy{margin-top:3px!important;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block!important;font-size:10.5px;padding:2px 9px}
+.ur{gap:5px;flex:none}.ur button{width:36px;height:36px}
+#fab{display:none!important}
+.mplus{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:#12a150;color:#fff;font-size:28px;line-height:1;padding:0;box-shadow:0 3px 10px rgba(0,0,0,.25)}
 </style></head><body>
-<div id="stk"><div class="top"><div class="brand"><div class="logo" style="display:flex;align-items:center;gap:8px"><img src="logo.png?v=2" alt="" style="height:46px;width:auto;flex:none">Dapur Dim’s</div><b>📒 Rekapan Tagihan</b><span>Catat, rekap, bagikan sebagai nota</span><span id="sy" style="display:block;margin-top:2px"></span></div>
+<div id="stk"><div class="top"><div class="brand"><img class="bl" src="logo.png?v=2" alt=""><div class="bt"><div class="logo">Dapur Dim’s</div><span id="sy"></span></div></div>
 <div class="ur"><button id="un" title="Undo">↶</button><button id="re" title="Redo">↷</button><button data-a="mo" title="Menu lainnya">⋯</button></div></div>
 <div id="bn"></div>
 <div class="tabs" id="tabs"></div></div>
@@ -204,7 +215,7 @@ body:has(#p4.on) #stk{box-shadow:none}
 <button class="wide img" id="im">🧾 Bagikan sebagai gambar (JPG)</button>
 <button class="wide ls" id="ls">✅ Tandai Lunas</button>
 </div>
-<div class="pane" id="p4"><div id="mst"><div id="mp"></div><div class="card" style="padding:8px"><input type="search" id="mfi" placeholder="🔍 Cari menu…" style="width:100%;border-radius:99px;padding:12px 16px"></div><div id="msg"></div></div><div id="mg"></div></div>
+<div class="pane" id="p4"><div id="mst"><div id="mp"></div><div class="card" style="padding:8px;display:flex;gap:8px;align-items:center"><input type="search" id="mfi" placeholder="🔍 Cari menu…" style="flex:1;min-width:0;border-radius:99px;padding:12px 16px"><button class="mplus" data-a="mm" title="Tambah menu">+</button></div><div id="msg"></div></div><div id="mg"></div></div>
 <div class="pane" id="p2">
 <div id="gt"></div>
 <div id="sm"></div>
@@ -524,8 +535,16 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  else if(a=='tex'&&TE){TE.items.splice(+i,1);tre()}
  else if(a=='tea'&&TE){var m0=findM(i);if(!m0)return;var f0=TE.items.filter(function(z){return z.n==m0.n&&z.p==m0.p})[0];if(f0)f0.q++;else TE.items.push({n:m0.n,q:1,p:m0.p});tre()}
  else if(a=='trs'&&TE){if(!TE.items.length){b.textContent='Minimal 1 menu';setTimeout(function(){b.textContent='Simpan perubahan'},1500);return}var x1=fnd(st.trx,TE.id),e1=linkE(TE.id);if(!x1)return;snap();teCap();x1.d=TE.d||x1.d;x1.s=TE.s||x1.s;var bb=parseFloat(TE.bay)||0;if(bb>0&&bb<1000)bb*=1000;x1.bay=bb;if(x1.u=='other'){x1.n=(TE.name||'').trim()||'Pelanggan lain';x1.ket=(TE.ket||'').trim()}else if(x1.oth){x1.pem=(TE.name||'').trim();x1.ket=(TE.ket||'').trim()}else if(EMO[x1.u]){x1.pem=TE.pm||x1.pem}if(e1){e1.d=x1.d;e1.s=x1.s}if(!x1.orig)x1.orig=JSON.parse(JSON.stringify(x1.items));x1.items=TE.items;x1.chg=tchg(x1.orig,x1.items);x1.T=TE.items.reduce(function(t,z){return t+z.q*z.p},0);if(e1)e1.v=x1.T;var id1=x1.id;TE=null;save();render();trdet(String(id1))}
- else if(a=='shs'){var su=(document.getElementById('shu').value||'').trim(),sk=(document.getElementById('shk').value||'').trim()||sheetKey();if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(su)||!sk){b.textContent='Isi alamat & kode dengan benar';setTimeout(function(){b.textContent='Simpan & hubungkan'},1800);return}try{localStorage.setItem('rekapan_su',su);localStorage.setItem('rekapan_sk',sk)}catch(e){}location.reload()}
+ else if(a=='shs'){var su=(document.getElementById('shu').value||'').trim(),sk=(document.getElementById('shk').value||'').trim()||sheetKey(),em=document.getElementById('shm');var bad=function(t){em.style.display='block';em.textContent=t;b.disabled=false;b.textContent='Simpan & hubungkan'};
+  if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(su)){bad('❌ Alamat salah. Harus diawali https://script.google.com/ dan berakhiran /exec. Tidak tersambung.');return}
+  if(!sk){bad('❌ Kode rahasia belum diisi. Tidak tersambung.');return}
+  em.style.display='none';b.disabled=true;b.textContent='Memeriksa…';
+  var ctl=new AbortController(),tm=setTimeout(function(){ctl.abort()},15000);
+  fetch(su,{method:'POST',body:JSON.stringify({k:sk,a:'pull',since:9007199254740991}),signal:ctl.signal}).then(function(r){return r.text()}).then(function(t){clearTimeout(tm);var jj;try{jj=JSON.parse(t)}catch(e){bad('❌ Alamat salah: bukan Web App yang benar. Pakai URL dari Deploy → Aplikasi web (berakhiran /exec) dengan akses "Siapa saja". Tidak tersambung.');return}
+   if(!jj||jj.err){bad('❌ Kode rahasia salah, ditolak server'+(jj&&jj.err?' ('+jj.err+')':'')+'. Tidak tersambung.');return}
+   try{localStorage.setItem('rekapan_su',su);localStorage.setItem('rekapan_sk',sk)}catch(e){}location.reload()}).catch(function(e){clearTimeout(tm);bad(e&&e.name=='AbortError'?'❌ Server tidak merespons (timeout). Periksa alamat dan koneksi internet. Tidak tersambung.':'❌ Tidak bisa menghubungi alamat itu. Periksa alamat dan koneksi internet. Tidak tersambung.')})}
  else if(a=='shx'){try{localStorage.removeItem('rekapan_su');localStorage.removeItem('rekapan_sk')}catch(e){}location.reload()}
+ else if(a=='shl'){var lk=location.origin+location.pathname+'#setup='+btoa(unescape(encodeURIComponent(JSON.stringify({u:sheetUrl(),k:sheetKey()})))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');var okc=function(){b.textContent='✓ Link tersalin';setTimeout(function(){b.textContent='🔗 Salin link setup'},1800)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lk).then(okc,function(){prompt('Salin link ini:',lk)})}else{prompt('Salin link ini:',lk)}}
  else if(a=='mcat'){mcat=i||'';rmp()}
  else if(a=='im2'){var ni=impMenu();mmod();var hh=document.querySelector('.mdl h3');if(hh)hh.insertAdjacentHTML('afterend','<p style="color:#12a150;font-weight:700">✅ '+ni+' menu berhasil diimpor</p>')}
  else if(a=='gv')gview();
@@ -619,7 +638,7 @@ function sy(t){var e=document.getElementById('sy');if(!e)return;var k=/Tersinkro
 function saveLocal(){try{localStorage.setItem('rekapan',JSON.stringify(st))}catch(e){}}
 var lastM={trx:{},hist:{},lun:{}},KD=[['trx','d'],['hist','at'],['lun','at']];
 function mkey(x,f){return String(x[f]).slice(0,7).replace('-','')}
-function pushRemote(force){if(!DB){if(sheetUrl())sy('📴 Offline · tersimpan di HP');return}clearTimeout(pt);sy('☁️ Menyimpan…');pt=setTimeout(function(){
+function pushRemote(force){if(!DB){if(sheetUrl())sy('📴 Offline · tersimpan');return}clearTimeout(pt);sy('☁️ Menyimpan…');pt=setTimeout(function(){
  var c={units:st.units,data:st.data,pays:st.pays,menu:st.menu,carry:st.carry,carryP:st.carryP,seq:st.seq},s=JSON.stringify(c),t=st._t||Date.now(),tw=[];
  KD.forEach(function(k){var G={};st[k[0]].forEach(function(x){var m=mkey(x,k[1]);(G[m]=G[m]||[]).push(x)});Object.keys(lastM[k[0]]).forEach(function(m){if(!G[m])G[m]=[]});
   Object.keys(G).forEach(function(m){var js=JSON.stringify(G[m]);if(js!=lastM[k[0]][m])tw.push([k[0],m,js])})});
@@ -667,21 +686,21 @@ function gate(mode){var g=document.getElementById('gate');if(gMode=='view'&&mode
  if(mode!='wait'){document.getElementById('gok').onclick=function(){sub(mode)};document.getElementById('gp').onkeydown=function(e){if(e.key=='Enter')sub(mode)}}}
 function sheetUrl(){try{return localStorage.getItem('rekapan_su')||''}catch(e){return ''}}
 function sheetKey(){try{return localStorage.getItem('rekapan_sk')||''}catch(e){return ''}}
-function sheetSetup(){modal('<h3>☁️ Google Sheet</h3><p style="font-size:13px;color:var(--mut);margin:0 0 10px">Tempel alamat Web App dan kode rahasia dari Apps Script.</p><input id="shu" placeholder="https://script.google.com/macros/s/.../exec" value="'+esc(sheetUrl())+'" style="width:100%;margin-bottom:8px"><input id="shk" type="password" placeholder="Kode rahasia'+(sheetKey()?' (kosongkan = tetap)':'')+'" style="width:100%"><button class="mbtn go" data-a="shs">Simpan &amp; hubungkan</button>'+(sheetUrl()?'<button class="mbtn" data-a="shx">Putuskan dari Google Sheet</button>':''))}
+function sheetSetup(){modal('<h3>☁️ Google Sheet</h3><p style="font-size:13px;color:var(--mut);margin:0 0 10px">Tempel alamat Web App dan kode rahasia dari Apps Script.</p><input id="shu" placeholder="https://script.google.com/macros/s/.../exec" value="'+esc(sheetUrl())+'" style="width:100%;margin-bottom:8px"><input id="shk" type="password" placeholder="Kode rahasia'+(sheetKey()?' (kosongkan = tetap)':'')+'" style="width:100%"><div id="shm" style="display:none;color:#e5484d;font-size:13px;line-height:1.4;margin:8px 0 2px"></div><button class="mbtn go" data-a="shs">Simpan &amp; hubungkan</button>'+(sheetUrl()&&sheetKey()?'<button class="mbtn" data-a="shl">🔗 Salin link setup</button>':'')+(sheetUrl()?'<button class="mbtn" data-a="shx">Putuskan dari Google Sheet</button>':''))}
 function sheetDB(){var U=sheetUrl(),K=sheetKey(),cache={},ds={},cs={},since=0,busy=false;
- function call(b){b.k=K;return fetch(U,{method:'POST',body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(j){if(!j||j.err)throw new Error(j&&j.err||'gagal');return j})}
+ function call(b){b.k=K;return fetch(U,{method:'POST',body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(j){if(!j||j.err){var er=new Error(j&&j.err||'gagal');er.srv=1;throw er}return j})}
  function snap(p){var d=cache[p];return{exists:d!==undefined,id:p.split('/')[1],data:function(){return d}}}
  function lst(c){return Object.keys(cache).filter(function(p){return p.indexOf(c+'/')==0}).map(snap)}
  function pull(){return call({a:'pull',since:since}).then(function(j){var ch={},cc={};(j.docs||[]).forEach(function(d){cache[d.p]=d.v;ch[d.p]=1;cc[d.p.split('/')[0]]=1;if(d.u>since)since=d.u});return{ch:ch,cc:cc}})}
  function tick(){if(busy)return;busy=true;pull().then(function(r){busy=false;if(document.getElementById('sy').dataset.s!='busy')sy('☁️ Tersinkron');Object.keys(r.ch).forEach(function(p){(ds[p]||[]).forEach(function(f){f(snap(p))})});Object.keys(r.cc).forEach(function(c){(cs[c]||[]).forEach(function(f){f({docs:lst(c)})})})}).catch(function(){busy=false;sy(navigator.onLine===false?'📴 Offline · tersimpan di HP':'⚠️ Gagal sinkron')})}
  var db={doc:function(p){return{get:function(){return Promise.resolve(snap(p))},set:function(v){return call({a:'set',p:p,v:v}).then(function(){cache[p]=JSON.parse(JSON.stringify(v))})},onSnapshot:function(f){(ds[p]=ds[p]||[]).push(f);setTimeout(function(){f(snap(p))},0)}}},
   collection:function(c){return{onSnapshot:function(f){(cs[c]=cs[c]||[]).push(f);setTimeout(function(){f({docs:lst(c)})},0)}}}};
- return pull().then(function(){setInterval(tick,10000);document.addEventListener('visibilitychange',function(){if(!document.hidden)tick()});return db}).catch(function(e){sy('📴 Sheet tidak terhubung · ketuk di sini untuk atur');throw e})}
+ return pull().then(function(){setInterval(tick,10000);document.addEventListener('visibilitychange',function(){if(!document.hidden)tick()});return db}).catch(function(e){sy(e&&e.srv?'⚠️ Kode rahasia salah / ditolak server · ketuk di sini untuk atur':'📴 Tidak bisa terhubung ke Sheet · ketuk di sini untuk atur');throw e})}
 function boot(){if(DB)return;var DBP=sheetUrl()&&sheetKey()?sheetDB():((window.claude&&window.claude.use)?claude.use('db'):null);
 document.getElementById('sy').onclick=sheetSetup;document.getElementById('sy').style.cursor='pointer';
 if(DBP){
  DBP.then(function(db){dbChecked=true;
-  if(!db){sy('📴 Mode lokal (belum login)');if(!okS())gate(pinH?'enter':'set');return}
+  if(!db){sy('📴 Mode lokal');if(!okS())gate(pinH?'enter':'set');return}
   DB=db;sy('☁️ Menghubungkan…');
   Promise.all([db.doc('app/pin').get(),db.doc('app/core').get()]).then(function(r){
    if(r[0].exists)remoteH=r[0].data().h;
@@ -691,9 +710,11 @@ if(DBP){
    subs();if(fresh)pushRemote(true);else{sy('☁️ Tersinkron');if((st._t||0)>(st._tc||0))pushRemote(true)}
   }).catch(function(){sy('⚠️ Gagal terhubung')})
  }).catch(function(){dbChecked=true;if(!okS())gate(pinH?'enter':'set')})
-}else{dbChecked=true;sy('📴 Mode lokal · ketuk di sini untuk hubungkan Google Sheet')}}
+}else{dbChecked=true;sy('📴 Mode lokal · ketuk')}}
+/* setup otomatis dari link #setup=... (HP baru) */
+(function(){try{var m=/^#setup=([A-Za-z0-9_-]+)$/.exec(location.hash||'');if(!m)return;var j=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')))));if(j&&/^https:\/\/script\.google(usercontent)?\.com\//.test(j.u)&&j.k){localStorage.setItem('rekapan_su',j.u);localStorage.setItem('rekapan_sk',j.k)}history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();
 boot();
-window.addEventListener('offline',function(){if(sheetUrl())sy('📴 Offline · tersimpan di HP')});
+window.addEventListener('offline',function(){if(sheetUrl())sy('📴 Offline · tersimpan')});
 window.addEventListener('online',function(){if(DB)pushRemote(true);else boot()});
 setInterval(function(){if(!DB&&sheetUrl()&&sheetKey()&&navigator.onLine!==false)boot()},30000);
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){});
