@@ -209,7 +209,8 @@ body:has(#p4.on) #stk{box-shadow:none}
 <div id="out"></div>
 <div class="card">
  <div class="ct" style="margin-bottom:0"><span>💰 Catat pembayaran</span><small id="psr" style="font-weight:800"></small></div><div id="pw" style="display:block;margin-top:10px">
- <div class="row" style="margin:0"><input type="date" id="pd"><input type="number" id="pa" inputmode="numeric" placeholder="Nominal bayar"><button class="add pb" id="pbtn" style="width:auto;padding:0 16px">+ Bayar</button></div></div>
+ <div class="row" style="margin:0"><input type="date" id="pd"><input type="number" id="pa" inputmode="numeric" placeholder="Nominal bayar"><button class="add pb" id="pbtn" style="width:auto;padding:0 16px">+ Bayar</button></div>
+ <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;line-height:1.4;cursor:pointer"><input type="checkbox" id="pcx" style="width:20px;height:20px;flex:none;margin:1px 0 0"><span>Tutup nota jika masih kurang: kurangnya jadi <b>“Kurang sebelumnya”</b> di paling atas, nomor mulai dari 1 lagi</span></label></div>
 </div>
 
 <button class="wide img" id="im">🧾 Bagikan sebagai gambar (JPG)</button>
@@ -648,13 +649,15 @@ document.getElementById('add').onclick=function(){
  else{vals.id=Date.now();st.data[u.id].push(vals)}
  cart={};autoDT();document.getElementById('a').value='';document.getElementById('nt').value='';save();render()};
 document.getElementById('cn').onclick=function(){ed=null;autoDT();document.getElementById('a').value='';document.getElementById('nt').value='';fUI()};
-document.getElementById('pbtn').onclick=function(){var v=parseFloat(document.getElementById('pa').value);if(!v||!pd.value)return;if(v<1000)v*=1000;snap();st.pays[st.u].push({id:Date.now(),d:pd.value,v:v});document.getElementById('pa').value='';save();render()};
+document.getElementById('pbtn').onclick=function(){var v=parseFloat(document.getElementById('pa').value);if(!v||!pd.value)return;if(v<1000)v*=1000;snap();st.pays[st.u].push({id:Date.now(),d:pd.value,v:v});document.getElementById('pa').value='';var cx=document.getElementById('pcx'),want=cx&&cx.checked;if(cx)cx.checked=false;
+ if(want){var u0=cu(),rem0=sumE(st.data[u0.id])+(st.carry[u0.id]||0)-sumP(st.pays[u0.id]);if(rem0>0){doSave(true,true);return}}
+ save();render()};
 document.getElementById('ls').onclick=function(){var u=cu(),E=st.data[u.id],cr=st.carry[u.id]||0,T=sumE(E)+cr;if(!(T>0))return;snap();frz(u.id);var P=st.pays[u.id].slice(),rem=T-sumP(P);if(rem>0)P.push({id:Date.now(),d:td(),v:rem});
  st.lun.unshift({id:Date.now(),u:u.id,n:u.n,c:u.c,at:td(),e:E.slice(),pays:P,cr:cr,crp:st.carryP[u.id]||0});st.data[u.id]=[];st.pays[u.id]=[];st.carry[u.id]=0;st.carryP[u.id]=0;save();render();window.scrollTo(0,0)};
-function doSave(){var u=cu(),E=st.data[u.id],cr=st.carry[u.id]||0,crp0=st.carryP[u.id]||0;if(!E.length&&!cr)return;snap();var P=st.pays[u.id],rem=sumE(E)+cr-sumP(P);if(rem<=0)frz(u.id);
+function doSave(stay,ns){var u=cu(),E=st.data[u.id],cr=st.carry[u.id]||0,crp0=st.carryP[u.id]||0;if(!E.length&&!cr)return;if(!ns)snap();var P=st.pays[u.id],rem=sumE(E)+cr-sumP(P);if(rem<=0)frz(u.id);
  st.hist.unshift({id:Date.now(),u:u.id,n:u.n,c:u.c,at:td(),e:E.slice(),pays:P.slice(),cr:cr,crp:crp0,cf:rem>0?rem:0});st.data[u.id]=[];st.pays[u.id]=[];st.carry[u.id]=rem>0?rem:0;st.carryP[u.id]=rem>0?sumP(P):0;
  
- save();render();document.getElementById('ov').style.display='none';nav(3)}
+ save();render();document.getElementById('ov').style.display='none';if(!stay)nav(3)}
 document.getElementById('im').onclick=function(){var u=cu();if(!st.data[u.id].length&&!st.carry[u.id])return;nota(spec(u.n,u.c,st.data[u.id],st.pays[u.id],st.carry[u.id],st.carryP[u.id]))};
 document.getElementById('un').onclick=function(){if(!undo.length)return;redo.push(JSON.stringify(st));rest(undo.pop())};
 document.getElementById('re').onclick=function(){if(!redo.length)return;undo.push(JSON.stringify(st));rest(redo.pop())};
