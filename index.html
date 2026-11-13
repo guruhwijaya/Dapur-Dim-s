@@ -364,11 +364,11 @@ function rtr(){var o=document.getElementById('tr');if(!o)return;var le=document.
    h0+=ks.length?'<div class="card" style="padding:0 12px">'+ks.map(function(k){return '<div class="mrow" data-a="trg" data-i="'+k+'"><div style="font-size:26px">'+(dp==LV.length-1?'🗓️':'📅')+'</div><div class="mn"><b>'+gl(k)+'</b><small>'+G[k].length+' transaksi · '+rp(sumT(G[k]))+'</small></div><span style="color:var(--mut);font-size:22px">›</span></div>'}).join('')+'</div>':'<div class="card"><p class="hint" style="text-align:center">Belum ada transaksi.</p></div>';
    o.innerHTML=h0;return}}
  L.forEach(function(x){x.items.forEach(function(i){var a=ag[i.n]||(ag[i.n]={q:0,v:0});a.q+=i.q;a.v+=i.q*i.p})});
- var top=Object.keys(ag).sort(function(a,b){return ag[b].v-ag[a].v}).slice(0,8);
+ var allK=Object.keys(ag).sort(function(a,b){return trS=='q'?(ag[b].q-ag[a].q||ag[b].v-ag[a].v):(ag[b].v-ag[a].v||ag[b].q-ag[a].q)}),top=trAll?allK:allK.slice(0,10);
  var h='<div class="hi" style="margin:4px 0 12px"><button class="cn2" data-a="trb">‹ Kembali</button><b style="font-size:14px">Laporan transaksi '+tt[trP]+(trK.length?' › '+gl(trK[trK.length-1]):'')+'</b></div>';
  h+='<div class="seg" style="overflow-x:auto">'+[['','Semua']].concat(st.units.map(function(u){return [u.id,u.n]}).concat([['other','Umum']])).map(function(z){return '<button data-a="tru" data-i="'+z[0]+'"'+(trU==z[0]?' class="on"':'')+' style="white-space:nowrap;padding:9px 10px">'+esc(z[1])+'</button>'}).join('')+'</div>';
  h+='<div class="card"><div class="lts"><div class="lt"><small>Transaksi</small><b>'+L.length+'</b></div><div class="lt"><small>Total penjualan</small><b>'+rp(sumT(L))+'</b></div></div></div>';
- if(top.length)h+='<div class="card"><div class="ct"><span>🍽️ Menu terjual</span></div>'+top.map(function(k){return '<div class="vr2"><span>'+esc(k)+' ×'+ag[k].q+'</span><b>'+rp(ag[k].v)+'</b></div>'}).join('')+'</div>';
+ if(top.length)h+='<div class="card"><div class="ct"><span>🍽️ Menu terlaris</span></div><div class="seg"><button data-a="trs" data-i="q"'+(trS=='q'?' class="on"':'')+'>Paling banyak (porsi)</button><button data-a="trs" data-i="v"'+(trS=='v'?' class="on"':'')+'>Paling besar (Rp)</button></div>'+top.map(function(k,ix){return '<div class="vr2"><span><b style="display:inline-block;min-width:24px;color:var(--mut)">'+(ix+1)+'.</b>'+esc(k)+(trS=='q'?' <b>×'+ag[k].q+'</b>':' ×'+ag[k].q)+'</span><b>'+(trS=='q'?rp(ag[k].v):rp(ag[k].v))+'</b></div>'}).join('')+(allK.length>10?'<button class="mbtn" data-a="tra" style="margin-top:10px">'+(trAll?'Tampilkan 10 teratas saja':'Tampilkan semua ('+allK.length+' menu)')+'</button>':'')+'</div>';
  h+=L.length?'<div class="card" style="padding:2px 12px">'+L.slice(0,trL).map(function(x){return '<div class="mrow" data-a="trd" data-i="'+x.id+'"><div class="mn"><b>No.0-'+x.no+' · '+esc(x.n)+'</b><small>'+x.d+' '+(x.tm||'').slice(0,5)+' · '+x.s+(x.pem?' · '+x.pem:'')+' · '+x.items.length+' menu</small></div><span class="mpr">'+rp(x.T)+'</span></div>'}).join('')+'</div>'+(L.length>trL?'<button class="mbtn" data-a="trm">Tampilkan lebih banyak ('+(L.length-trL)+' lagi)</button>':''):'<div class="card"><p class="hint" style="text-align:center">Belum ada transaksi.</p></div>';
  o.innerHTML=h}
 var TE=null;
@@ -396,7 +396,7 @@ function mmod(){var h='<h3>🍽️ Kelola menu</h3><div style="text-align:left">
  [['makan','🍛 Makan'],['minum','🥤 Minum'],['add','➕ Add']].forEach(function(g){h+='<div class="ct" style="margin-top:8px">'+g[1]+'</div>';st.menu[g[0]].forEach(function(m){h+='<div class="mu"><input type="text" value="'+esc(m.n)+'" data-a="mn" data-i="'+m.id+'"><input type="number" value="'+m.p+'" data-a="mpr" data-i="'+m.id+'" style="max-width:100px"><button data-a="mx" data-i="'+m.id+'">✕</button></div>'})});
  h+='</div>';
  modal(h)}
-var lpP='day',lpU='',lpL=12,mfq='',mcat='',mdD='',mdS='',mpem='Rizal',mpemX='',mKet='',mMode='unit',mbayV='',mNo=0,trP=null,trU='',trL=30,trK=[];
+var lpP='day',lpU='',lpL=12,mfq='',mcat='',mdD='',mdS='',mpem='Rizal',mpemX='',mKet='',mMode='unit',mbayV='',mNo=0,trP=null,trU='',trL=30,trK=[],trS='q',trAll=false;
 try{mpem=localStorage.getItem('rekapan_pem')||'Rizal'}catch(e){}
 if(mpem=='__x')mpem='Rizal';
 try{mpemX=localStorage.getItem('rekapan_pemx')||''}catch(e){}
@@ -548,10 +548,12 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  else if(a=='nd'){var m2=document.getElementById('nm');if(!LN)return;var an=document.createElement('a');an.href=LN.url;an.download='rekapan.jpg';document.body.appendChild(an);an.click();an.remove();m2.textContent='Jika tidak terunduh, tekan lama gambar lalu pilih Simpan.'}
  else if(a=='cx'){snap();st.carry[st.u]=0;st.carryP[st.u]=0;save();render()}
  else if(a=='mn'){var it2=[],T2=0;['makan','minum','add'].forEach(function(k){st.menu[k].forEach(function(m){var q=cart[m.id];if(q){T2+=m.p*q;it2.push({n:m.n,q:q,p:m.p})}})});if(!it2.length)return;var u2=mMode=='other'?{id:'other',n:((mpemX||'').trim()||'Pelanggan lain'),c:'#9aa3ad'}:cu(),bv=parseFloat(mbayV)||0;if(bv>0&&bv<1000)bv*=1000;notaR({items:it2,T:T2,unit:u2,date:mdD||td(),shift:mdS||curS(),pem:pemN(u2),oth:(mMode=='other'||(EMO[u2.id]&&mpem=='__x'))?1:0,ket:(mMode=='other'||(EMO[u2.id]&&mpem=='__x'))?mKet:'',bay:bv,no:(mNo||(mNo=seqNo())),rn:rowNo(u2.id,mdD||td(),mdS||curS())})}
- else if(a=='trp'){trP=i;trL=30;trU='';trK=[];rtr()}
+ else if(a=='trp'){trP=i;trL=30;trU='';trK=[];trAll=false;rtr()}
  else if(a=='trg'){trK.push(i);trL=30;rtr()}
  else if(a=='trb'){if(trK.length){trK.pop();trL=30}else trP=null;rtr()}
  else if(a=='tru'){trU=i;trL=30;rtr()}
+ else if(a=='trs'){trS=i;rtr()}
+ else if(a=='tra'){trAll=!trAll;rtr()}
  else if(a=='trm'){trL+=30;rtr()}
  else if(a=='trd')trdet(i);
  else if(a=='trn'){var xx=fnd(st.trx,i);if(xx)notaR({items:xx.items,T:xx.T,unit:{id:xx.u,n:xx.n},date:xx.d,shift:xx.s,pem:xx.pem,oth:xx.oth,ket:xx.ket,bay:xx.bay,no:xx.no,chg:xx.chg,rn:rowNo(xx.u,xx.d,xx.s,xx.id)||xx.no,tm:xx.tm})}
