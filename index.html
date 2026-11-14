@@ -117,6 +117,7 @@ body{padding-bottom:96px}
 .lr{padding:10px 0;border-top:1px solid var(--bd);font-size:13.5px}.lv{display:flex;justify-content:space-between;margin-top:4px;color:var(--mut);font-size:12.5px}.lv b{color:var(--tx)}
 .mrow{display:flex;align-items:center;gap:10px;padding:13px 2px;border-bottom:1px solid var(--bd);cursor:pointer}.mrow:last-child{border-bottom:0}
 .mrow .mn{flex:1;min-width:0}.mrow .mn b{display:block;font-size:14.5px;font-weight:600}.mrow .mn small{color:var(--mut);font-size:11.5px}
+#ter{max-height:38vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin-top:4px;border-bottom:1px solid var(--bd)}
 .mpr{background:rgba(18,161,80,.16);color:#12a150;font-weight:700;font-size:12.5px;padding:5px 11px;border-radius:99px;white-space:nowrap}
 .cb2{background:#e8333a;color:#fff;border-radius:99px;font-size:11px;padding:4px 10px;font-weight:700}
 #fab{display:none;position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:#12a150;color:#fff;font-size:32px;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.3);z-index:45}
@@ -412,7 +413,7 @@ function teR(){var o=document.getElementById('ter');if(!o)return;var qs=(documen
  if(!qs.length){o.innerHTML='<p class="hint" style="text-align:center">Ketik nama menu untuk menambah.</p>';return}
  ['makan','minum','add'].forEach(function(k){st.menu[k].forEach(function(m){var n=m.n.toLowerCase();if(qs.every(function(w){return n.indexOf(w)>=0}))A.push({m:m,k:k})})});
  A.sort(function(a,b){return a.m.n.toLowerCase()<b.m.n.toLowerCase()?-1:1});
- o.innerHTML=A.length?A.slice(0,6).map(function(z){return '<div class="mrow" data-a="tea" data-i="'+z.m.id+'"><div class="mn"><b>'+esc(z.m.n)+'</b><small>'+(z.k=='makan'?'Makan':z.k=='add'?'Add':'Minum')+'</small></div><span class="mpr">'+rp(z.m.p)+'</span></div>'}).join('')+(A.length>6?'<p class="hint" style="text-align:center">+'+(A.length-6)+' menu lain, perjelas pencarian</p>':''):'<p class="hint" style="text-align:center">Menu tidak ditemukan.</p>'}
+ o.innerHTML=A.length?A.map(function(z){return '<div class="mrow" data-a="tea" data-i="'+z.m.id+'"><div class="mn"><b>'+esc(z.m.n)+'</b><small>'+(z.k=='makan'?'Makan':z.k=='add'?'Add':'Minum')+'</small></div><span class="mpr">'+rp(z.m.p)+'</span></div>'}).join(''):'<p class="hint" style="text-align:center">Menu tidak ditemukan.</p>'}
 document.addEventListener('input',function(e){if(e.target.id=='tes')teR()});
 function trdet(i){var x=fnd(st.trx,i);if(!x)return;
  modal('<h3>🧾 '+nolab(x)+'</h3><p>'+esc(x.n)+' · '+fl(x.d)+' · '+x.s+(x.pem?' · '+esc(x.pem):'')+'</p><div style="text-align:left">'+x.items.map(function(it){return '<div class="vr2"><span>'+esc(it.n)+' ×'+it.q+' <small style="color:var(--mut)">@ '+rp(it.p)+'</small></span><b>'+rp(it.p*it.q)+'</b></div>'}).join('')+'<div class="vr2 tt"><span>TOTAL</span><b>'+rp(x.T)+'</b></div></div><button class="mbtn go" data-a="trn" data-i="'+x.id+'">🧾 Bagikan nota (JPG)</button>'+'<button class="mbtn" data-a="tre" data-i="'+x.id+'">✏️ Edit nota</button>'+'<button class="mbtn" data-a="trx" data-i="'+x.id+'">🗑 Hapus transaksi</button>')}
