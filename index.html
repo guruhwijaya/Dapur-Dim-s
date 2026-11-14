@@ -447,7 +447,7 @@ function sumE(a){return a.reduce(function(t,e){return t+e.v},0)}
 function hT(h){return sumE(h.e)+(h.cr||0)}
 function sumP(a){return a.reduce(function(t,e){return t+e.v},0)}
 function cu(){return uo(st.u)}
-function rowsH(E,edit){return srt(E).map(function(e,i){return '<div class="it"'+(edit?' data-a="ed" data-i="'+e.id+'"':'')+'><div class="l" style="background:'+col(e)+'">'+lab(e)+(e.tx?' 🧾':'')+(e.note?'<small>'+esc(e.note)+'</small>':'')+'</div><div class="r">'+rp(e.v)+(edit?'<button class="x" data-a="x" data-i="'+e.id+'">✕</button>':'')+'</div><div class="n">'+(i+1)+'</div></div>'}).join('')}
+function rowsH(E,edit){return srt(E).map(function(e,i){return '<div class="it"'+(edit?' data-a="ed" data-i="'+e.id+'"':'')+'><div class="l" style="background:'+col(e)+'">'+lab(e)+(e.tx?' 🧾':'')+(e.note?'<small>'+esc(e.note)+'</small>':'')+'</div><div class="r"'+(e.sent?'':' style="color:#111"')+'>'+rp(e.v)+(edit?'<button class="x" data-a="x" data-i="'+e.id+'">✕</button>':'')+'</div><div class="n">'+(i+1)+'</div></div>'}).join('')}
 function tbl(n,c,E,P,edit,cr,crp){cr=cr||0;crp=crp||0;var T=sumE(E)+cr,by=sumP(P),kk=T-by,has=E.length>0||cr>0,ok=has&&by>0&&kk<=0,h='<div class="rec"><div class="hd" style="background:'+c+'"><b>'+esc(n)+'</b><small>TOTAL SEMUA</small>'+(ok?'<br><span class="pill">LUNAS ✓</span>':(edit&&E.length?'<br>'+ago(srt(E)[0].d,'tagihan terlama '):''))+'</div>';
  if(!has)h+='<div class="empty">Belum ada tagihan</div>';
  if(cr>0)h+=(crp>0?'<div class="pay" style="background:#9df59d"><span>BAYAR SEBELUMNYA</span><span><s>'+rp(crp)+'</s></span></div>':'')+'<div class="kur" style="padding:12px 14px"><b>KURANG SEBELUMNYA</b><span style="font-size:19px">'+rp(cr)+(edit?'<button class="x" data-a="cx" style="color:#fff;margin-left:8px">✕</button>':'')+'</span></div>';
@@ -474,8 +474,8 @@ function txtOf(n,E,P){var T=sumE(E),by=sumP(P),s=n+' - TOTAL SEMUA\n\n';
  if(by>0)s+=(T-by<=0&&T>0)?'\nSTATUS: LUNAS ✓':'\nTOTAL KURANG = '+rp(T-by);
  return s}
 function shr(t){if(navigator.share){navigator.share({text:t}).catch(function(){})}else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
-function spec(n,c,E,P,cr,crp){cr=cr||0;crp=crp||0;var T=sumE(E)+cr,by=sumP(P),kk=T-by,p=by>0&&(E.length>0||cr>0),lun=p&&kk<=0;
- return{title:n,sub:'TOTAL SEMUA'+(lun?'  ·  LUNAS':''),color:c,rows:(cr>0?(crp>0?[{l:'BAYAR SEBELUMNYA',r:rp(crp),bg:'#9df59d',nn:1,c:'#555',strike:1}]:[]).concat([{l:'KURANG SEBELUMNYA',r:rp(cr),bg:'#ffb3b3',nn:1}]):[]).concat(srt(E).map(function(e){return{l:lab(e),note:e.note,r:rp(e.v),bg:col(e)}})),pays:p?P.map(function(q){return{l:'BAYAR · '+fs(q.d),r:rp(q.v)}}):[],
+function spec(n,c,E,P,cr,crp,trk){cr=cr||0;crp=crp||0;var T=sumE(E)+cr,by=sumP(P),kk=T-by,p=by>0&&(E.length>0||cr>0),lun=p&&kk<=0;
+ return{title:n,sub:'TOTAL SEMUA'+(lun?'  ·  LUNAS':''),color:c,rows:(cr>0?(crp>0?[{l:'BAYAR SEBELUMNYA',r:rp(crp),bg:'#9df59d',nn:1,c:'#555',strike:1}]:[]).concat([{l:'KURANG SEBELUMNYA',r:rp(cr),bg:'#ffb3b3',nn:1}]):[]).concat(srt(E).map(function(e){var o={l:lab(e),note:e.note,r:rp(e.v),bg:col(e)};if(trk)o.c=e.sent?'#c62828':'#111';return o})),eids:trk?E.map(function(e){return e.id}):null,uid:trk?st.u:null,pays:p?P.map(function(q){return{l:'BAYAR · '+fs(q.d),r:rp(q.v)}}):[],
   fl:p?(kk>0?'TOTAL KURANG':kk==0?'LUNAS ✓':'TOTAL LEBIH'):'TOTAL',fv:p?(kk==0?rp(T):rp(Math.abs(kk))):rp(T),fbg:p?(kk<=0?'#12803c':'#c62828'):'#111',fcol:p?(kk<=0?'#fff':'#ffe66d'):'#fff'}}
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 function modal(h){var o=document.getElementById('ov'),op=o.style.display=='block',sc0=o.scrollTop;o.innerHTML='<div class="mdl'+(op?'':' in')+'">'+h+'<button class="mbtn" data-a="cl">Tutup</button></div>';o.style.display='block';o.scrollTop=op?sc0:0}
@@ -494,7 +494,8 @@ function btPrint(){var m=document.getElementById('nm');if(!LN)return;
  if(!navigator.bluetooth){m.textContent='Browser ini tidak mendukung Bluetooth langsung. Pakai Chrome di Android, atau tombol Cetak nota + aplikasi RawBT.';return}
  m.textContent='Memilih printer…';
  btChar().then(function(c){m.textContent='Mengirim ke printer…';return btBytes(LN.url,btW()).then(function(u){return btSend(c,u)})}).then(function(){m.textContent='Selesai dicetak ✓'}).catch(function(e){BT.c=null;m.textContent=(e&&e.name=='NotFoundError')?'Dibatalkan.':(e&&e.message=='nochar')?'Printer ini tidak mendukung cetak langsung (bukan BLE). Pakai tombol Cetak nota + aplikasi RawBT.':'Gagal terhubung/mencetak: '+((e&&e.message)||e)})}
-function pvm(u){modal('<p>Tekan lama gambar untuk menyimpan, atau pakai tombol di bawah</p><img src="'+u+'"><button class="mbtn go" data-a="ns">📤 Bagikan gambar</button><button class="mbtn go" data-a="nb">🖨️ Cetak ke printer Bluetooth</button><button class="mbtn" data-a="np">🖨️ Cetak nota</button><button class="mbtn" data-a="nd">⬇️ Simpan gambar</button><p id="nm"></p>')}
+function pvm(u){modal('<p>Tekan lama gambar untuk menyimpan, atau pakai tombol di bawah</p><img src="'+u+'"><button class="mbtn go" data-a="ns">📤 Bagikan gambar</button><button class="mbtn go" data-a="nb">🖨️ Cetak ke printer Bluetooth</button><button class="mbtn" data-a="np">🖨️ Cetak nota</button><button class="mbtn" data-a="nd">⬇️ Simpan gambar</button>'+(LN&&LN.ids?'<button class="mbtn" data-a="nk">✅ Tandai sudah terkirim</button>':'')+'<p id="nm"></p>')}
+function markSent(){if(!LN||!LN.ids||!LN.u)return;var E=st.data[LN.u]||[],n=0;E.forEach(function(e){if(LN.ids.indexOf(e.id)>=0&&!e.sent){e.sent=1;n++}});LN.ids=null;save();render();var m=document.getElementById('nm');if(m)m.textContent='✓ Ditandai terkirim ('+n+' tagihan jadi merah)'}
 function nota(sp){
  var W=720,pd=24,hh=110,fh=84,ph=56,F='system-ui,Arial,sans-serif',RH=sp.rows.map(function(r){return r.note?72:56});
  var cH=76+hh+RH.reduce(function(a,b){return a+b},0)+sp.pays.length*ph+fh,H=cH+2*pd+62;
@@ -519,7 +520,7 @@ function nota(sp){
  g.textAlign='center';g.fillStyle='#374151';g.font='bold 22px '+F;g.fillText("©Dim's 081993360992",W/2,H-34);
  g.fillStyle='#9ca3af';g.font='16px '+F;g.fillText('Dicetak '+new Date().toLocaleDateString('id-ID'),W/2,H-12);
  var url=c.toDataURL('image/jpeg',.92);
- c.toBlob(function(b){var f=new File([b],'rekapan.jpg',{type:'image/jpeg'});LN={url:url,file:f};
+ c.toBlob(function(b){var f=new File([b],'rekapan.jpg',{type:'image/jpeg'});LN={url:url,file:f,ids:sp.eids||null,u:sp.uid||null};
   pvm(url)},'image/jpeg',.92)}
 function months(){var m={};st.lun.concat(st.hist).forEach(function(h){m[h.at.slice(0,7)]=1});return Object.keys(m).sort().reverse()}
 function ml(k){var p=k.split('-');return MO[+p[1]-1]+' '+p[0]}
@@ -569,8 +570,9 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  else if(a=='ho'){var x=fnd(st.hist,i);if(!uo(x.u)){st.units.push({id:x.u,n:x.n,c:x.c});st.data[x.u]=[];st.pays[x.u]=[];st.carry[x.u]=0}snap();st.carry[x.u]=Math.max(0,(st.carry[x.u]||0)-(x.cf||0))+(x.cr||0);st.carryP[x.u]=x.crp||0;st.data[x.u]=st.data[x.u].concat(x.e);st.pays[x.u]=st.pays[x.u].concat(x.pays);st.hist=st.hist.filter(function(z){return z!==x});st.u=x.u;save();render();window.scrollTo(0,0)}
  else if(a=='gi'){var G=window.GT;nota({title:'TOTAL KESELURUHAN',sub:st.units.map(function(q){return q.n}).join(' · '),color:'#9fe3b0',rows:G.rows,pays:[],fl:G.all?'LUNAS ✓':(G.P>0?(G.K>=0?'TOTAL KURANG':'TOTAL LEBIH'):'TOTAL'),fv:G.all?rp(G.G):rp(G.P>0?Math.abs(G.K):G.G),fbg:G.all?'#12803c':(G.P>0?'#c62828':'#111'),fcol:G.P>0&&!G.all?'#ffe66d':'#fff'})}
  else if(a=='gt'){var G=window.GT,s='TOTAL KESELURUHAN\n\n';GT.rows.forEach(function(r){s+=r.l+' = '+r.r+'\n'});s+=G.all?'\nSTATUS: LUNAS SEMUA ✓':(G.P>0?'\nTOTAL '+(G.K>=0?'KURANG':'LEBIH')+' = '+rp(Math.abs(G.K)):'\nTOTAL = '+rp(G.G));shr(s)}
- else if(a=='ns'){var m=document.getElementById('nm');if(LN&&navigator.share&&navigator.canShare&&navigator.canShare({files:[LN.file]})){navigator.share({files:[LN.file]}).catch(function(){m.textContent='Bagikan dibatalkan atau tidak diizinkan di sini. Tekan lama gambar untuk menyimpan.'})}else m.textContent='Fitur bagikan tidak tersedia di tampilan ini. Tekan lama gambar lalu Simpan, atau buka link ini di Chrome atau Brave.'}
+ else if(a=='ns'){var m=document.getElementById('nm');if(LN&&navigator.share&&navigator.canShare&&navigator.canShare({files:[LN.file]})){navigator.share({files:[LN.file]}).then(function(){markSent()},function(){m.textContent='Bagikan dibatalkan atau tidak diizinkan di sini. Tekan lama gambar untuk menyimpan.'})}else m.textContent='Fitur bagikan tidak tersedia di tampilan ini. Tekan lama gambar lalu Simpan, atau buka link ini di Chrome atau Brave.'}
  else if(a=='nb'){btPrint()}
+ else if(a=='nk'){markSent()}
  else if(a=='np'){if(!LN)return;var fr=document.createElement('iframe');fr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(fr);var pd=fr.contentWindow.document;pd.open();pd.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Nota</title><style>@page{margin:5mm}html,body{margin:0;text-align:center}img{max-width:100%;height:auto}</style></head><body><img src="'+LN.url+'"></body></html>');pd.close();var pim=pd.querySelector('img'),pgo=function(){try{fr.contentWindow.focus();fr.contentWindow.print()}catch(e){window.print()}setTimeout(function(){fr.remove()},60000)};if(pim.complete)pgo();else pim.onload=pgo}
  else if(a=='nd'){var m2=document.getElementById('nm');if(!LN)return;var an=document.createElement('a');an.href=LN.url;an.download='rekapan.jpg';document.body.appendChild(an);an.click();an.remove();m2.textContent='Jika tidak terunduh, tekan lama gambar lalu pilih Simpan.'}
  else if(a=='cx'){snap();st.carry[st.u]=0;st.carryP[st.u]=0;save();render()}
@@ -677,7 +679,7 @@ document.getElementById('add').onclick=function(){
  var v=parseFloat(document.getElementById('a').value);if(!v||!di.value)return;if(v<1000)v*=1000;
  var u=cu(),vals={d:di.value,s:document.getElementById('s').value,v:v,note:document.getElementById('nt').value.trim()};
  snap();
- if(ed){var e=fnd(st.data[u.id],String(ed));if(e){e.d=vals.d;e.s=vals.s;e.v=vals.v;e.note=vals.note}ed=null}
+ if(ed){var e=fnd(st.data[u.id],String(ed));if(e){if(e.v!=vals.v)e.sent=0;e.d=vals.d;e.s=vals.s;e.v=vals.v;e.note=vals.note}ed=null}
  else{vals.id=Date.now();st.data[u.id].push(vals)}
  cart={};autoDT();document.getElementById('a').value='';document.getElementById('nt').value='';save();render()};
 document.getElementById('cn').onclick=function(){ed=null;autoDT();document.getElementById('a').value='';document.getElementById('nt').value='';fUI()};
@@ -690,7 +692,7 @@ function doSave(stay,ns){var u=cu(),E=st.data[u.id],cr=st.carry[u.id]||0,crp0=st
  st.hist.unshift({id:Date.now(),u:u.id,n:u.n,c:u.c,at:td(),e:E.slice(),pays:P.slice(),cr:cr,crp:crp0,cf:rem>0?rem:0});st.data[u.id]=[];st.pays[u.id]=[];st.carry[u.id]=rem>0?rem:0;st.carryP[u.id]=rem>0?sumP(P):0;
  
  save();render();document.getElementById('ov').style.display='none';if(!stay)nav(3)}
-document.getElementById('im').onclick=function(){var u=cu();if(!st.data[u.id].length&&!st.carry[u.id])return;nota(spec(u.n,u.c,st.data[u.id],st.pays[u.id],st.carry[u.id],st.carryP[u.id]))};
+document.getElementById('im').onclick=function(){var u=cu();if(!st.data[u.id].length&&!st.carry[u.id])return;nota(spec(u.n,u.c,st.data[u.id],st.pays[u.id],st.carry[u.id],st.carryP[u.id],1))};
 document.getElementById('un').onclick=function(){if(!undo.length)return;redo.push(JSON.stringify(st));rest(undo.pop())};
 document.getElementById('re').onclick=function(){if(!redo.length)return;undo.push(JSON.stringify(st));rest(redo.pop())};
 document.getElementById('q').oninput=function(){q=this.value.trim();lim=8;rl();rh()};
