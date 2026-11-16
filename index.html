@@ -195,6 +195,16 @@ body:has(#p4.on) #stk{box-shadow:none}
 .ur{gap:5px;flex:none}.ur button{width:36px;height:36px}
 #fab{display:none!important}
 .mplus{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:#12a150;color:#fff;font-size:28px;line-height:1;padding:0;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.lr2{display:flex;align-items:center;gap:10px;padding:16px 14px;border-bottom:1px solid var(--bd);cursor:pointer}
+.lr2:last-child{border-bottom:0}
+.lr2 .lbig{flex:1;min-width:0}
+.lr2 .lbig>b{display:block;font-size:30px;font-weight:800;line-height:1.05;letter-spacing:.5px}
+.lr2 .lbig>b.tx{font-size:18px;font-weight:700;letter-spacing:0;line-height:1.25}
+.lr2 .lbig small{display:block;color:var(--mut);font-size:14.5px;margin-top:4px;font-weight:400}
+.lr2 .dflex{display:inline-flex;align-items:center;gap:8px}
+.lr2 .d1{font-size:34px;font-weight:800}.lr2 .d2{font-size:13px;font-weight:600;line-height:1.15;letter-spacing:0}
+.lr2 .lamt{text-align:left;min-width:128px}.lr2 .lamt i{display:block;font-size:12px;color:var(--mut)}.lr2 .lamt b{font-size:17px;font-weight:800}
+.lr2 .larr{color:#1b9e83;font-size:26px;line-height:1}
 </style></head><body>
 <div id="stk"><div class="top"><div class="brand"><img class="bl" src="logo.png?v=2" alt=""><div class="bt"><div class="logo">Dapur Dim’s</div><span id="sy"></span></div></div>
 <div class="ur"><button id="un" title="Undo">↶</button><button id="re" title="Redo">↷</button><button data-a="mo" title="Menu lainnya">⋯</button></div></div>
@@ -378,6 +388,9 @@ function rbest(o){var L=trf('all',trU),yrs={};L.forEach(function(x){yrs[x.d.slic
  if(top.length)h+='<div class="card"><div class="ct"><span>🍽️ Peringkat menu</span></div><div class="seg"><button data-a="trs" data-i="q"'+(trS=='q'?' class="on"':'')+'>Paling banyak (porsi)</button><button data-a="trs" data-i="v"'+(trS=='v'?' class="on"':'')+'>Paling besar (Rp)</button></div>'+top.map(function(k,ix){return '<div class="vr2"><span><b style="display:inline-block;min-width:26px;color:var(--mut)">'+(ix+1)+'.</b>'+esc(k)+' <b>×'+ag[k].q+'</b></span><b>'+rp(ag[k].v)+'</b></div>'}).join('')+(allK.length>10?'<button class="mbtn" data-a="tra" style="margin-top:10px">'+(trAll?'Tampilkan 10 teratas saja':'Tampilkan semua ('+allK.length+' menu)')+'</button>':'')+'</div>';
  else h+='<div class="card"><p class="hint" style="text-align:center">Belum ada penjualan pada waktu ini.</p></div>';
  o.innerHTML=h}
+function lrow(big,small,amt,attr,cls){return '<div class="lr2" '+attr+'><div class="lbig"><b'+(cls?' class="'+cls+'"':'')+'>'+big+'</b><small>'+small+'</small></div><div class="lamt"><i>Pendapatan</i><b>'+rp(amt)+'</b></div><span class="larr">→</span></div>'}
+function dshort(d){var p=d.split('-'),m=MO[+p[1]-1];return (+p[2])+' '+m.charAt(0)+m.slice(1,3).toLowerCase()+' '+p[0]}
+function kbig(k){if(k.length==4)return k;var m=MO[+k.slice(5,7)-1];if(k.length==7)return m.slice(0,3);return '<span class="dflex"><span class="d1">'+(+k.slice(8))+'</span><span class="d2">'+m.charAt(0)+m.slice(1,3).toLowerCase()+'<br>'+k.slice(0,4)+'</span></span>'}
 function rtr(){var o=document.getElementById('tr');if(!o)return;var le=document.getElementById('lp');if(le)le.style.display=trP?'none':'block';
  if(!trP){var M=[['best','Menu terlaris (tahun · bulan · hari · jam)'],['day','Laporan transaksi hari ini'],['month','Laporan transaksi bulan ini'],['year','Laporan transaksi tahun ini'],['all','Laporan semua transaksi']];
   o.innerHTML='<div class="sec" style="margin-top:4px">Laporan Transaksi</div><div class="card" style="padding:0 12px">'+M.map(function(z){var L=trf(z[0],'');return '<div class="mrow" data-a="trp" data-i="'+z[0]+'"><div style="font-size:26px">'+(z[0]=='best'?'🏆':'📊')+'</div><div class="mn"><b>'+z[1]+'</b><small>'+(z[0]=='best'?'Filter per tahun, bulan, hari, jam':L.length+' transaksi · '+rp(sumT(L)))+'</small></div><span style="color:var(--mut);font-size:22px">›</span></div>'}).join('')+'</div><p class="hint" style="text-align:center">Nota tersimpan otomatis di sini saat kamu menekan Tambah ke tagihan di tab Menu.</p>';return}
@@ -390,7 +403,7 @@ function rtr(){var o=document.getElementById('tr');if(!o)return;var le=document.
    var h0='<div class="hi" style="margin:4px 0 12px"><button class="cn2" data-a="trb">‹ Kembali</button><b style="font-size:14px">Laporan transaksi '+tt[trP]+(trK.length?' › '+gl(trK[dp-1]):'')+'</b></div>';
    h0+='<div class="seg" style="overflow-x:auto">'+[['','Semua']].concat(st.units.map(function(u){return [u.id,u.n]}).concat([['other','Umum']])).map(function(z){return '<button data-a="tru" data-i="'+z[0]+'"'+(trU==z[0]?' class="on"':'')+' style="white-space:nowrap;padding:9px 10px">'+esc(z[1])+'</button>'}).join('')+'</div>';
    h0+='<div class="card"><div class="lts"><div class="lt"><small>Transaksi</small><b>'+L.length+'</b></div><div class="lt"><small>Total penjualan</small><b>'+rp(sumT(L))+'</b></div></div></div>';
-   h0+=ks.length?'<div class="card" style="padding:0 12px">'+ks.map(function(k){return '<div class="mrow" data-a="trg" data-i="'+k+'"><div style="font-size:26px">'+(dp==LV.length-1?'🗓️':'📅')+'</div><div class="mn"><b>'+gl(k)+'</b><small>'+G[k].length+' transaksi · '+rp(sumT(G[k]))+'</small></div><span style="color:var(--mut);font-size:22px">›</span></div>'}).join('')+'</div>':'<div class="card"><p class="hint" style="text-align:center">Belum ada transaksi.</p></div>';
+   h0+=ks.length?'<div class="card" style="padding:0 12px">'+ks.map(function(k){return lrow(kbig(k),G[k].length+' transaksi',sumT(G[k]),'data-a="trg" data-i="'+k+'"')}).join('')+'</div>':'<div class="card"><p class="hint" style="text-align:center">Belum ada transaksi.</p></div>';
    o.innerHTML=h0;return}}
  L.forEach(function(x){x.items.forEach(function(i){var a=ag[i.n]||(ag[i.n]={q:0,v:0});a.q+=i.q;a.v+=i.q*i.p})});
  var allK=Object.keys(ag).sort(function(a,b){return trS=='q'?(ag[b].q-ag[a].q||ag[b].v-ag[a].v):(ag[b].v-ag[a].v||ag[b].q-ag[a].q)}),top=trAll?allK:allK.slice(0,10);
@@ -398,7 +411,7 @@ function rtr(){var o=document.getElementById('tr');if(!o)return;var le=document.
  h+='<div class="seg" style="overflow-x:auto">'+[['','Semua']].concat(st.units.map(function(u){return [u.id,u.n]}).concat([['other','Umum']])).map(function(z){return '<button data-a="tru" data-i="'+z[0]+'"'+(trU==z[0]?' class="on"':'')+' style="white-space:nowrap;padding:9px 10px">'+esc(z[1])+'</button>'}).join('')+'</div>';
  h+='<div class="card"><div class="lts"><div class="lt"><small>Transaksi</small><b>'+L.length+'</b></div><div class="lt"><small>Total penjualan</small><b>'+rp(sumT(L))+'</b></div></div></div>';
  if(top.length)h+='<div class="card"><div class="ct"><span>🍽️ Menu terlaris</span></div><div class="seg"><button data-a="trs" data-i="q"'+(trS=='q'?' class="on"':'')+'>Paling banyak (porsi)</button><button data-a="trs" data-i="v"'+(trS=='v'?' class="on"':'')+'>Paling besar (Rp)</button></div>'+top.map(function(k,ix){return '<div class="vr2"><span><b style="display:inline-block;min-width:24px;color:var(--mut)">'+(ix+1)+'.</b>'+esc(k)+(trS=='q'?' <b>×'+ag[k].q+'</b>':' ×'+ag[k].q)+'</span><b>'+(trS=='q'?rp(ag[k].v):rp(ag[k].v))+'</b></div>'}).join('')+(allK.length>10?'<button class="mbtn" data-a="tra" style="margin-top:10px">'+(trAll?'Tampilkan 10 teratas saja':'Tampilkan semua ('+allK.length+' menu)')+'</button>':'')+'</div>';
- h+=L.length?'<div class="card" style="padding:2px 12px">'+L.slice(0,trL).map(function(x){return '<div class="mrow" data-a="trd" data-i="'+x.id+'"><div class="mn"><b>'+nolab(x)+'</b><small>'+x.d+' '+(x.tm||'').slice(0,5)+' · '+x.s+(x.pem?' · '+x.pem:'')+' · '+x.items.length+' menu</small></div><span class="mpr">'+rp(x.T)+'</span></div>'}).join('')+'</div>'+(L.length>trL?'<button class="mbtn" data-a="trm">Tampilkan lebih banyak ('+(L.length-trL)+' lagi)</button>':''):'<div class="card"><p class="hint" style="text-align:center">Belum ada transaksi.</p></div>';
+ h+=L.length?'<div class="card" style="padding:2px 12px">'+L.slice(0,trL).map(function(x){return lrow(nolab(x),dshort(x.d)+' · '+(x.tm||'')+' · '+x.s+(x.pem?' · '+x.pem:'')+' · '+x.items.length+' menu',x.T,'data-a="trd" data-i="'+x.id+'"','tx')}).join('')+'</div>'+(L.length>trL?'<button class="mbtn" data-a="trm">Tampilkan lebih banyak ('+(L.length-trL)+' lagi)</button>':''):'<div class="card"><p class="hint" style="text-align:center">Belum ada transaksi.</p></div>';
  o.innerHTML=h}
 var TE=null;
 function linkE(id){var r=null;st.units.forEach(function(u){(st.data[u.id]||[]).forEach(function(e){if(String(e.tx)==String(id))r=e})});st.hist.forEach(function(h){h.e.forEach(function(e){if(String(e.tx)==String(id))r=e})});return r}
