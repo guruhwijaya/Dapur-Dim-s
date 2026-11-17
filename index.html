@@ -396,7 +396,7 @@ function rtr(){var o=document.getElementById('tr');if(!o)return;var le=document.
   o.innerHTML='<div class="sec" style="margin-top:4px">Laporan Transaksi</div><div class="card" style="padding:0 12px">'+M.map(function(z){var L=trf(z[0],'');return '<div class="mrow" data-a="trp" data-i="'+z[0]+'"><div style="font-size:26px">'+(z[0]=='best'?'🏆':'📊')+'</div><div class="mn"><b>'+z[1]+'</b><small>'+(z[0]=='best'?'Filter per tahun, bulan, hari, jam':L.length+' transaksi · '+rp(sumT(L)))+'</small></div><span style="color:var(--mut);font-size:22px">›</span></div>'}).join('')+'</div><p class="hint" style="text-align:center">Nota tersimpan otomatis di sini saat kamu menekan Tambah ke tagihan di tab Menu.</p>';return}
  if(trP=='best'){rbest(o);return}
  var L=trf(trP,trU),ag={},tt={day:'hari ini',month:'bulan ini',year:'tahun ini',all:'semua transaksi'};
- var LV=trP=='all'?[4,7,10]:trP=='year'?[7,10]:[];
+ var LV=trP=='all'?[4,7,10]:trP=='year'?[7,10]:trP=='month'?[10]:[];
  function gl(k){return k.length==4?k:k.length==7?MO[+k.slice(5)-1].charAt(0)+MO[+k.slice(5)-1].slice(1).toLowerCase()+' '+k.slice(0,4):fl(k)}
  if(LV.length){var dp=trK.length;if(dp)L=L.filter(function(x){return x.d.indexOf(trK[dp-1])==0});
   if(dp<LV.length){var G={},ks;L.forEach(function(x){var k=x.d.slice(0,LV[dp]);(G[k]||(G[k]=[])).push(x)});ks=Object.keys(G).sort().reverse();
