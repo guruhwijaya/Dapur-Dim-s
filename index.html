@@ -257,6 +257,23 @@ body:has(#p4.on) #stk{box-shadow:none}
 .emp b{display:block;color:var(--tx);font-size:14.5px;margin-bottom:3px}
 .emp span{display:block;font-size:12.5px;line-height:1.45}
 .rec .emp{color:#8a8f98}.rec .emp b{color:#222}
+
+/* ===== Tabel tagihan: rapi & keren ===== */
+.it .l{display:flex;flex-direction:column;justify-content:center;min-height:56px;padding:8px 12px}
+.it .l .lm{display:block;line-height:1.25}
+.it .l{position:relative}.it .l:has(.ri){padding-right:26px}.it .l .lm{font-size:13px}
+.ri{position:absolute;right:8px;top:9px;width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;opacity:.45}
+.it .r{gap:2px;padding:8px 6px 8px 10px}
+.it .x{flex:none;min-width:36px;height:36px;margin-left:12px;padding:0;border-radius:10px;color:#8b9099;font-size:16px;display:inline-flex;align-items:center;justify-content:center}
+.it .x:active{background:rgba(0,0,0,.07)}
+.x.sure{min-width:0;height:auto;padding:8px 10px;font-size:11.5px;font-weight:700;border-radius:9px;margin-left:8px}
+.lgd{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;padding:8px 10px;background:#fafafa;border-top:1px solid rgba(0,0,0,.08);font-size:11.5px;color:#666;font-weight:600}
+.lgd i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.tot,.kur{position:relative}
+.tot{background:linear-gradient(135deg,#1d1d20,#0b0b0c)}
+.tot span,.kur span{font-family:inherit;font-variant-numeric:tabular-nums;letter-spacing:.2px;font-size:25px;font-weight:800}
+.kur span[style]{font-size:19px}
+.tot::before,.kur:not([style])::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--fire)}
 </style></head><body>
 <div id="stk"><div class="top"><div class="brand"><img class="bl" src="logo.png?v=2" alt=""><div class="bt"><div class="logo">Dapur Dim’s</div><span id="sy"></span></div></div>
 <div class="ur"><button id="un" title="Undo">↶</button><button id="re" title="Redo">↷</button><button data-a="mo" title="Menu lainnya">⋯</button></div></div>
@@ -555,11 +572,13 @@ function sumE(a){return a.reduce(function(t,e){return t+e.v},0)}
 function hT(h){return sumE(h.e)+(h.cr||0)}
 function sumP(a){return a.reduce(function(t,e){return t+e.v},0)}
 function cu(){return uo(st.u)}
-function rowsH(E,edit){return srt(E).map(function(e,i){return '<div class="it"'+(edit?' data-a="ed" data-i="'+e.id+'"':'')+'><div class="l" style="background:'+col(e)+'">'+lab(e)+(e.tx?' 🧾':'')+(e.note?'<small>'+esc(e.note)+'</small>':'')+'</div><div class="r"'+(e.sent?'':' style="color:#111"')+'>'+rp(e.v)+(edit?'<button class="x" data-a="x" data-i="'+e.id+'">✕</button>':'')+'</div><div class="n">'+(i+1)+'</div></div>'}).join('')}
+var RI=' <svg class="ri" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>';
+function rowsH(E,edit){return srt(E).map(function(e,i){return '<div class="it"'+(edit?' data-a="ed" data-i="'+e.id+'"':'')+'><div class="l" style="background:'+col(e)+'"><span class="lm">'+lab(e)+(e.tx?RI:'')+'</span>'+(e.note?'<small>'+esc(e.note)+'</small>':'')+'</div><div class="r"'+(e.sent?'':' style="color:#111"')+'>'+rp(e.v)+(edit?'<button class="x" data-a="x" data-i="'+e.id+'">✕</button>':'')+'</div><div class="n">'+(i+1)+'</div></div>'}).join('')}
 function tbl(n,c,E,P,edit,cr,crp){cr=cr||0;crp=crp||0;var T=sumE(E)+cr,by=sumP(P),kk=T-by,has=E.length>0||cr>0,ok=has&&by>0&&kk<=0,h='<div class="rec"><div class="hd" style="background:'+c+'"><b>'+esc(n)+'</b><small>TOTAL SEMUA</small>'+(ok?'<br><span class="pill">LUNAS ✓</span>':(edit&&E.length?'<br>'+ago(srt(E)[0].d,'tagihan terlama '):''))+'</div>';
  if(!has)h+=emp('bill','Belum ada tagihan',edit?'Isi nominal di atas lalu ketuk “Tambah tagihan”.':'');
  if(cr>0)h+=(crp>0?'<div class="pay" style="background:#9df59d"><span>BAYAR SEBELUMNYA</span><span><s>'+rp(crp)+'</s></span></div>':'')+'<div class="kur" style="padding:12px 14px"><b>KURANG SEBELUMNYA</b><span style="font-size:19px">'+rp(cr)+(edit?'<button class="x" data-a="cx" style="color:#fff;margin-left:8px">✕</button>':'')+'</span></div>';
  h+=rowsH(E,edit);
+  if(edit&&E.some(function(e){return e.sent})&&E.some(function(e){return !e.sent}))h+='<div class="lgd"><span><i style="background:#c62828"></i>Sudah dikirim</span><span><i style="background:#111"></i>Tagihan baru</span></div>';
  if(by>0&&has){P.forEach(function(p){h+='<div class="pay"><span>BAYAR · '+fs(p.d)+'</span><span>'+rp(p.v)+(edit?'<button class="x" data-a="px" data-i="'+p.id+'">✕</button>':'')+'</span></div>'});
   h+='<div class="kur'+(kk<=0?' ok':'')+'"><b>'+(kk>0?'TOTAL KURANG':kk==0?'LUNAS ✓':'TOTAL LEBIH')+'</b><span'+cua(edit,kk==0?T:Math.abs(kk))+'>'+(kk==0?rp(T):rp(Math.abs(kk)))+'</span></div>'}
  else h+='<div class="tot"><b>TOTAL</b><span'+cua(edit,T)+'>'+rp(T)+'</span></div>';
@@ -606,12 +625,12 @@ function pvm(u){modal('<p>Tekan lama gambar untuk menyimpan, atau pakai tombol d
 function markSent(){if(!LN||!LN.ids||!LN.u)return;var E=st.data[LN.u]||[],n=0;E.forEach(function(e){if(LN.ids.indexOf(e.id)>=0&&!e.sent){e.sent=1;n++}});LN.ids=null;save();render();var m=document.getElementById('nm');if(m)m.textContent='✓ Ditandai terkirim ('+n+' tagihan jadi merah)'}
 function nota(sp){
  var W=720,pd=24,hh=110,fh=84,ph=56,F='system-ui,Arial,sans-serif',RH=sp.rows.map(function(r){return r.note?72:56});
- var cH=76+hh+RH.reduce(function(a,b){return a+b},0)+sp.pays.length*ph+fh,H=cH+2*pd+62;
+ var LG=sp.rows.some(function(r){return r.c=='#c62828'})&&sp.rows.some(function(r){return r.c=='#111'}),LH=LG?46:0;var cH=76+hh+LH+RH.reduce(function(a,b){return a+b},0)+sp.pays.length*ph+fh,H=cH+2*pd+62;
  var c=document.createElement('canvas');c.width=W;c.height=H;var g=c.getContext('2d');
  g.fillStyle='#eef1f5';g.fillRect(0,0,W,H);
  var x=pd,w=W-2*pd,y=pd,y0=pd;
  g.fillStyle='#fff';rr(g,x,y,w,cH,22);g.fill();g.save();rr(g,x,y,w,cH,22);g.clip();
- g.fillStyle='#111';g.fillRect(x,y,w,76);g.fillStyle='#fff';g.textAlign='center';g.font='bold 26px '+F;g.fillText(usaha(),W/2,y+34);g.fillStyle='#bbb';g.font='16px '+F;g.fillText((sp.kind||'NOTA TAGIHAN')+' · No. '+nextNo()+' · '+fl(sp.at||td()),W/2,y+58);y+=76;g.fillStyle=sp.color;g.fillRect(x,y,w,hh);
+ g.fillStyle='#111';g.fillRect(x,y,w,76);g.fillStyle='#fff';g.textAlign='center';g.font='bold 26px '+F;g.fillText(usaha(),W/2,y+34);g.fillStyle='#bbb';g.font='16px '+F;g.fillText((sp.kind||'NOTA TAGIHAN')+' · No. '+nextNo()+' · '+fl(sp.at||td()),W/2,y+58);var _g2=g.createLinearGradient(x,0,x+w,0);_g2.addColorStop(0,'#d62839');_g2.addColorStop(.5,'#ff8a1f');_g2.addColorStop(1,'#ffc233');g.fillStyle=_g2;g.fillRect(x,y+72,w,4);y+=76;g.fillStyle=sp.color;g.fillRect(x,y,w,hh);
  g.fillStyle='#111';g.textAlign='center';g.font='bold 34px '+F;g.fillText(sp.title,W/2,y+52);g.font='20px '+F;g.fillText(sp.sub,W/2,y+86);
  y+=hh;
  var nC=0;sp.rows.forEach(function(r,i){var rh=RH[i],ty=r.note?32:36;
@@ -621,8 +640,9 @@ function nota(sp){
   g.font='bold 24px '+F;g.fillStyle=r.c||'#c62828';g.textAlign='right';g.fillText(r.r,x+w-70,y+ty);if(r.strike){var tw=g.measureText(r.r).width;g.fillRect(x+w-70-tw,y+ty-8,tw,2)}
   g.fillStyle='#f1f1f1';g.fillRect(x+w-52,y,52,rh);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x+w-52,y,1,rh);
   g.fillStyle='#444';g.textAlign='center';g.font='bold 22px '+F;g.fillText(r.nn?'':String(++nC),x+w-26,y+ty);y+=rh});
+  if(LG){g.fillStyle='#fafafa';g.fillRect(x,y,w,LH);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x,y,w,1);g.font='17px '+F;g.textAlign='left';var L2=[['#c62828','Sudah dikirim sebelumnya'],['#111','Tagihan baru']],ws=L2.map(function(z){return g.measureText(z[1]).width+20}),lx=x+(w-(ws[0]+ws[1]+30))/2;L2.forEach(function(z,k){g.fillStyle=z[0];g.beginPath();g.arc(lx+6,y+LH/2,6,0,7);g.fill();g.fillStyle='#555';g.fillText(z[1],lx+20,y+LH/2+6);lx+=ws[k]+30});y+=LH}
  sp.pays.forEach(function(p,i){g.fillStyle='#fff3a0';g.fillRect(x,y,w,ph);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x,y,w,i?1:3);g.fillStyle='#111';g.font='bold 22px '+F;g.textAlign='left';g.fillText(p.l,x+18,y+36);g.textAlign='right';g.fillText(p.r,x+w-18,y+36);y+=ph});
- g.fillStyle=sp.fbg;g.fillRect(x,y,w,fh);g.fillStyle=sp.fcol;g.textAlign='left';g.font='bold 28px '+F;g.fillText(sp.fl,x+18,y+52);g.textAlign='right';g.font='bold 34px monospace';g.fillText(sp.fv,x+w-18,y+54);
+ g.fillStyle=sp.fbg;g.fillRect(x,y,w,fh);var _g1=g.createLinearGradient(x,0,x+w,0);_g1.addColorStop(0,'#d62839');_g1.addColorStop(.5,'#ff8a1f');_g1.addColorStop(1,'#ffc233');g.fillStyle=_g1;g.fillRect(x,y,w,5);g.fillStyle=sp.fcol;g.textAlign='left';g.font='bold 28px '+F;g.fillText(sp.fl,x+18,y+52);g.textAlign='right';g.font='bold 34px '+F;g.fillText(sp.fv,x+w-18,y+54);
  g.save();g.globalAlpha=.07;g.translate(W/2,y0+cH/2);g.rotate(-.5);g.fillStyle='#000';g.textAlign='center';g.font='bold 70px '+F;g.fillText("©Dim's",0,0);g.restore();
  g.restore();
  g.textAlign='center';g.fillStyle='#374151';g.font='bold 22px '+F;g.fillText("©Dim's 081993360992",W/2,H-34);
@@ -662,7 +682,7 @@ function bk(){modal('<h3>💾 Cadangan data</h3><p>Simpan cadangan supaya data a
  document.getElementById('bf').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){document.getElementById('bt').value=r.result};r.readAsText(f)}}
 function fnd(a,i){return a.filter(function(z){return String(z.id)==i})[0]}
 document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]');if(!b||b.tagName=='INPUT')return;var a=b.dataset.a,i=b.dataset.i,u=cu();
- if(['ld','hd','ud','hl','trx'].indexOf(a)>=0&&!b.dataset.c){var ot=b.textContent;b.dataset.c=1;b.textContent='Yakin?';b.classList.add('sure');setTimeout(function(){if(b.isConnected){b.textContent=ot;delete b.dataset.c;b.classList.remove('sure')}},3000);return}
+ if(['ld','hd','ud','hl','trx','x','px','cx'].indexOf(a)>=0&&!b.dataset.c){var ot=b.textContent;b.dataset.c=1;b.textContent='Yakin?';b.classList.add('sure');setTimeout(function(){if(b.isConnected){b.textContent=ot;delete b.dataset.c;b.classList.remove('sure')}},3000);return}
  if(a=='tab'){st.u=i;mMode='unit';ed=null;save();render();var oo=document.getElementById('out');oo.classList.remove('sw');void oo.offsetWidth;oo.classList.add('sw');setTimeout(function(){oo.classList.remove('sw')},450)}
  else if(a=='x'){snap();var de=fnd(st.data[u.id],i);if(de&&de.tx)st.trx=st.trx.filter(function(z){return String(z.id)!=String(de.tx)});st.data[u.id]=st.data[u.id].filter(function(e){return String(e.id)!=i});ed=null;save();render()}
  else if(a=='px'){snap();st.pays[u.id]=st.pays[u.id].filter(function(e){return String(e.id)!=i});save();render()}
