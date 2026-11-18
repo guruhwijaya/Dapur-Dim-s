@@ -426,15 +426,15 @@ function nrr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r)
 function notaR(o){
  if(!window._nf&&document.fonts&&document.fonts.load){window._nf=1;var fl=function(){notaR(o)};Promise.all([document.fonts.load('60px "Kaushan Script"'),document.fonts.load('400 22px Poppins'),document.fonts.load('500 22px Poppins'),document.fonts.load('600 22px Poppins')]).then(fl,fl);return}
  var W=680,pd=58,F='Poppins,Roboto,system-ui,Arial,sans-serif',LR=(o.rounds&&o.rounds.length)?o.rounds[o.rounds.length-1]:(o.chg||null),RD=LR?[LR]:[],MI=!LR?o.items:((o.rounds&&o.rounds.length)?undoR(o.items,LR):(o.base||o.items)),H=760+MI.length*100+RD.reduce(function(a,r){return a+chgH(r)},0),c=document.createElement('canvas');c.width=W;c.height=H;var g=c.getContext('2d');
- var INK='#1c1c1e',MUT='#8b8578',GOLD='#b08d57',LN='#d9d1c1',GRN='#2e7d4f',RED='#c0392b',nm=usaha()=="DIM'S"?"Dapur Dim's":usaha(),now=new Date(),tm=o.tm||now.toTimeString().slice(0,8),y=112;
+ var INK='#1c1c1e',MUT='#8b8578',GOLD='#b08d57',LN='#d9d1c1',GRN='#2e7d4f',RED='#c0392b',nm=usaha()=="DIM'S"?"Dapur Dim's":usaha(),now=new Date(),tm=o.tm||now.toTimeString().slice(0,8),y=112,isO=!!(o.oth&&o.unit&&o.unit.id=='other');
  function ln(){g.save();g.strokeStyle=LN;g.lineWidth=2;g.setLineDash([2,8]);g.lineCap='round';g.beginPath();g.moveTo(pd,y);g.lineTo(W-pd,y);g.stroke();g.restore()}
  function row(l,r,font,col){g.font=font;g.fillStyle=col||INK;g.textAlign='left';g.fillText(l,pd,y);g.textAlign='right';g.fillText(r,W-pd,y)}
  g.textAlign='center';g.fillStyle=INK;var tf=62;g.font=tf+'px "Kaushan Script",cursive';while(g.measureText('North Joenstone').width>W-2*pd&&tf>30){tf--;g.font=tf+'px "Kaushan Script",cursive'}g.fillText('North Joenstone',W/2,y);y+=30;
  g.strokeStyle=GOLD;g.lineWidth=2;g.beginPath();g.moveTo(W/2-96,y);g.lineTo(W/2-14,y);g.moveTo(W/2+14,y);g.lineTo(W/2+96,y);g.stroke();
  g.fillStyle=GOLD;g.beginPath();g.moveTo(W/2,y-6);g.lineTo(W/2+6,y);g.lineTo(W/2,y+6);g.lineTo(W/2-6,y);g.closePath();g.fill();y+=42;
  g.textAlign='left';g.font='400 22px '+F;g.fillStyle=MUT;g.fillText(o.date,pd,y);g.textAlign='right';g.fillStyle=INK;g.font='600 24px '+F;g.fillText(nm,W-pd,y);y+=28;
- g.textAlign='left';g.font='400 22px '+F;g.fillStyle=MUT;g.fillText(tm,pd,y);if(o.oth){var cn=((o.unit&&o.unit.id=='other')?o.unit.n:o.pem)||'';if(cn&&cn!='Pelanggan lain'){y+=32;g.fillStyle=INK;g.font='600 25px '+F;while(g.measureText(cn).width>W-2*pd&&cn.length>3)cn=cn.slice(0,-2);g.fillText(cn,pd,y)}}y+=46;
- g.textAlign='center';g.fillStyle=INK;g.font='600 42px '+F;if(!o.oth){g.fillText(String(o.rn||o.no||seqNo()),W/2,y);y+=28}else y-=14;
+ g.textAlign='left';g.font='400 22px '+F;g.fillStyle=MUT;g.fillText(tm,pd,y);if(isO){var cn=((o.unit&&o.unit.id=='other')?o.unit.n:o.pem)||'';if(cn&&cn!='Pelanggan lain'){y+=32;g.fillStyle=INK;g.font='600 25px '+F;while(g.measureText(cn).width>W-2*pd&&cn.length>3)cn=cn.slice(0,-2);g.fillText(cn,pd,y)}}y+=46;
+ g.textAlign='center';g.fillStyle=INK;g.font='600 42px '+F;if(!isO){g.fillText(String(o.rn||o.no||seqNo()),W/2,y);y+=28}else y-=14;
  ln();y+=38;
  MI.forEach(function(it){var t=it.n;g.font='600 25px '+F;while(g.measureText(t).width>W-2*pd&&t.length>3)t=t.slice(0,-2);if(t!=it.n)t+='…';g.textAlign='left';g.fillStyle=INK;g.fillText(t,pd,y);y+=30;g.font='400 22px '+F;g.fillStyle=MUT;g.fillText(it.q+' × '+rcc(it.p),pd,y);g.textAlign='right';g.fillStyle=INK;g.font='500 24px '+F;g.fillText(rcp(it.p*it.q),W-pd,y);y+=42});
  y-=10;ln();y+=38;
@@ -444,7 +444,7 @@ function notaR(o){
  if(o.bay>0){row('Bayar (Cash)',rcp(o.bay),'400 23px '+F,MUT);y+=34;if(o.bay>=o.T)row('Kembali',rcp(o.bay-o.T),'600 24px '+F,GRN);else row('Kurang',rcp(o.T-o.bay),'600 24px '+F,RED);y+=34}
  y+=12;
  var u=o.unit,nm2=u.n.replace(/^P\.\s*/i,'Pak ').toLowerCase().replace(/\b\w/g,function(x){return x.toUpperCase()});
- var ket=o.oth?(o.ket||'').trim():((EMO[u.id]||'🔹')+' '+nm2+' ❌ '+o.shift.toUpperCase()+' ('+hari(o.date)+') '+(o.pem||'')).trim(),fs2=23;
+ var ket=isO?(o.ket||'').trim():((EMO[u.id]||'🔹')+' '+nm2+' ❌ '+o.shift.toUpperCase()+' ('+hari(o.date)+') '+(o.pem||'')+((o.oth&&(o.ket||'').trim())?' · '+(o.ket||'').trim():'')).trim(),fs2=23;
  g.textAlign='center';g.fillStyle=INK;g.font='500 '+fs2+'px '+F;while(g.measureText(ket).width>W-2*pd&&fs2>13){fs2--;g.font='500 '+fs2+'px '+F}
  if(ket){g.fillText(ket,W/2,y);y+=54}else y+=18;
  g.fillStyle=GOLD;g.font='38px "Kaushan Script",cursive';g.fillText('Terima kasih',W/2,y);y+=34;
@@ -749,6 +749,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  else if(a=='dt'){var w=document.getElementById('dtw');w.style.display=w.style.display=='none'?'flex':'none'}
  else if(a=='pt'){var w2=document.getElementById('pw');w2.style.display=w2.style.display=='none'?'block':'none'}
  else if(a=='mt'){if(!Object.keys(cart).length)return;var its=[],TT=0;['makan','minum','add'].forEach(function(k){st.menu[k].forEach(function(m){var q=cart[m.id];if(q){TT+=m.p*q;its.push({n:m.n,q:q,p:m.p})}})});var u3=cu(),dd=mdD||td(),ss=mdS||curS(),bv=parseFloat(mbayV)||0;if(bv>0&&bv<1000)bv*=1000;
+  if(mMode!='other'&&EMO[u3.id]&&mpem=='__x'&&!(mpemX||'').trim()){var e4=document.getElementById('mm2');if(e4)e4.textContent='⚠️ Isi nama pemesan dulu';var i4=document.getElementById('mpemx');if(i4)i4.focus();return}
   if(mMode=='other'){var nmO=(mpemX||'').trim()||'Pelanggan lain',noO=mNo||seqNo();mNo=0;st.trx.push({id:Date.now()*1000+Math.floor(Math.random()*1000),no:noO,u:'other',n:nmO,c:'#9aa3ad',d:dd,s:ss,pem:'',oth:1,ket:mKet,tm:new Date().toTimeString().slice(0,8),items:its,T:TT,bay:bv});cart={};mdD='';mdS='';mbayV='';mKet='';save();render();var e3=document.getElementById('mm2');if(e3)e3.textContent='✅ Transaksi tersimpan di Laporan (tidak masuk tagihan)';return}
   ed=null;cartApply();di.value=dd;document.getElementById('s').value=ss;dtS();document.getElementById('nt').value='';var n0=st.data[u3.id].length;document.getElementById('add').onclick();
   if(st.data[u3.id].length>n0){var no=mNo||seqNo();mNo=0;var tid=Date.now()*1000+Math.floor(Math.random()*1000);st.data[u3.id][st.data[u3.id].length-1].tx=tid;st.trx.push({id:tid,no:no,u:u3.id,n:u3.n,c:u3.c,d:dd,s:ss,pem:pemN(u3),oth:(EMO[u3.id]&&mpem=='__x')?1:0,ket:(EMO[u3.id]&&mpem=='__x')?mKet:'',tm:new Date().toTimeString().slice(0,8),items:its,T:TT,bay:bv});save()}
