@@ -407,7 +407,7 @@ function rcc(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,
 function hari(d){var p=d.split('-');return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date(+p[0],+p[1]-1,+p[2]).getDay()]}
 function seqNo(){st.seq=(st.seq||0)+1;save();return st.seq}
 function alamat(){var d='JL DR Soetomo 73 Junrejo - Batu';try{return localStorage.getItem('rekapan_al')||d}catch(e){return d}}
-function shareC(c){var url=c.toDataURL('image/jpeg',.92);c.toBlob(function(b){var f=new File([b],'nota.jpg',{type:'image/jpeg'});LN={url:url,file:f};pvm(url)},'image/jpeg',.92)}
+function shareC(c){var url=c.toDataURL('image/jpeg',.92);c.toBlob(function(b){var f=new File([b],'nota.jpg',{type:'image/jpeg'});LN={url:url,file:f};if(window._pend){LN.ids=window._pend.ids;LN.u=window._pend.u;window._pend=null}pvm(url)},'image/jpeg',.92)}
 function ser(uid){return (st.data[uid]||[]).slice()}
 function frz(uid){var A=srt(ser(uid));A.forEach(function(e,k){if(e.tx){var x=fnd(st.trx,String(e.tx));if(x)x.rn=k+1}})}
 function rowNo(uid,d,s,tid){var A=ser(uid);
@@ -573,7 +573,7 @@ function hT(h){return sumE(h.e)+(h.cr||0)}
 function sumP(a){return a.reduce(function(t,e){return t+e.v},0)}
 function cu(){return uo(st.u)}
 var RI=' <svg class="ri" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>';
-function rowsH(E,edit){return srt(E).map(function(e,i){return '<div class="it"'+(edit?' data-a="ed" data-i="'+e.id+'"':'')+'><div class="l" style="background:'+col(e)+'"><span class="lm">'+lab(e)+(e.tx?RI:'')+'</span>'+(e.note?'<small>'+esc(e.note)+'</small>':'')+'</div><div class="r"'+(e.sent?'':' style="color:#111"')+'>'+rp(e.v)+(edit?'<button class="x" data-a="x" data-i="'+e.id+'">✕</button>':'')+'</div><div class="n">'+(i+1)+'</div></div>'}).join('')}
+function rowsH(E,edit){return srt(E).map(function(e,i){return '<div class="it"'+(edit?' data-a="ed" data-i="'+e.id+'"':'')+'><div class="l" style="background:'+col(e)+'"><span class="lm">'+lab(e)+(e.tx?RI:'')+'</span>'+(e.note?'<small>'+esc(e.note)+'</small>':'')+'</div><div class="r"'+(e.tx&&fnd(st.trx,String(e.tx))?' data-a="trn" data-i="'+e.tx+'" style="cursor:pointer;'+(e.sent?'':'color:#111;')+'"':(e.sent?'':' style="color:#111"'))+'>'+rp(e.v)+(edit?'<button class="x" data-a="x" data-i="'+e.id+'">✕</button>':'')+'</div><div class="n">'+(i+1)+'</div></div>'}).join('')}
 function tbl(n,c,E,P,edit,cr,crp){cr=cr||0;crp=crp||0;var T=sumE(E)+cr,by=sumP(P),kk=T-by,has=E.length>0||cr>0,ok=has&&by>0&&kk<=0,h='<div class="rec"><div class="hd" style="background:'+c+'"><b>'+esc(n)+'</b><small>TOTAL SEMUA</small>'+(ok?'<br><span class="pill">LUNAS ✓</span>':(edit&&E.length?'<br>'+ago(srt(E)[0].d,'tagihan terlama '):''))+'</div>';
  if(!has)h+=emp('bill','Belum ada tagihan',edit?'Isi nominal di atas lalu ketuk “Tambah tagihan”.':'');
  if(cr>0)h+=(crp>0?'<div class="pay" style="background:#9df59d"><span>BAYAR SEBELUMNYA</span><span><s>'+rp(crp)+'</s></span></div>':'')+'<div class="kur" style="padding:12px 14px"><b>KURANG SEBELUMNYA</b><span style="font-size:19px">'+rp(cr)+(edit?'<button class="x" data-a="cx" style="color:#fff;margin-left:8px">✕</button>':'')+'</span></div>';
@@ -716,7 +716,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  else if(a=='tra'){trAll=!trAll;rtr()}
  else if(a=='trm'){trL+=30;rtr()}
  else if(a=='trd')trdet(i);
- else if(a=='trn'){var xx=fnd(st.trx,i);if(xx)notaR({items:xx.items,T:xx.T,unit:{id:xx.u,n:xx.n},date:xx.d,shift:xx.s,pem:xx.pem,oth:xx.oth,ket:xx.ket,bay:xx.bay,no:xx.no,chg:xx.chg,rounds:xx.rounds,base:xx.orig,rn:rowNo(xx.u,xx.d,xx.s,xx.id)||xx.no,tm:xx.tm})}
+ else if(a=='trn'){var xx=fnd(st.trx,i);if(xx){window._pend=null;st.units.forEach(function(un){(st.data[un.id]||[]).forEach(function(e2){if(String(e2.tx)==String(i))window._pend={ids:[e2.id],u:un.id}})})}if(xx)notaR({items:xx.items,T:xx.T,unit:{id:xx.u,n:xx.n},date:xx.d,shift:xx.s,pem:xx.pem,oth:xx.oth,ket:xx.ket,bay:xx.bay,no:xx.no,chg:xx.chg,rounds:xx.rounds,base:xx.orig,rn:rowNo(xx.u,xx.d,xx.s,xx.id)||xx.no,tm:xx.tm})}
  else if(a=='trx'){snap();st.trx=st.trx.filter(function(z){return String(z.id)!=i});st.units.forEach(function(un){st.data[un.id]=st.data[un.id].filter(function(e){return String(e.tx)!=i})});save();document.getElementById('ov').style.display='none';render()}
  else if(a=='tre'){var tx0=fnd(st.trx,i);if(!tx0)return;TE={id:i,items:JSON.parse(JSON.stringify(tx0.items)),d:tx0.d,s:tx0.s,bay:tx0.bay||0,name:(tx0.u=='other'?tx0.n:(tx0.pem||'')),ket:tx0.ket||'',pm:tx0.pem||'Rizal'};tre()}
  else if(a=='teq'&&TE){var it0=TE.items[+i];it0.q=Math.max(1,it0.q+(+b.dataset.d));tre()}
