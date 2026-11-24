@@ -913,13 +913,13 @@ function qg(){if(!Q){try{Q=JSON.parse(localStorage.getItem('rekapan_q')||'null')
 function qClr(man){var q=qg(),r=q.r;q.p=0;q.d=0;q.r='';if(r=='est'){if(man)q.ov=1;else{q.s=0;q.n=0;q.ms=0;q.ov=0}}qf=(r=='est')?0:4;qSv()}
 function qAfter(){if(DB){sy('☁️ Menghubungkan…');if(DB.poke)DB.poke();setTimeout(function(){if(DB&&!qBlk())pushRemote(true)},3000)}else boot()}
 function qResume(man){qClr(man);qAfter()}
-function qBlk(){var q=qg();if(!q.p)return false;if(Date.now()<q.p)return true;qClr(false);setTimeout(qAfter,200);return false}
+function qBlk(){var q=qg();if(!q.p)return false;if(q.r=='est'&&fbOn()){qClr(false);return false}if(Date.now()<q.p)return true;qClr(false);setTimeout(qAfter,200);return false}
 function qPct(){return Math.min(100,Math.round(qg().ms/QLIM*100))}
 function qLeft(){var s=Math.max(0,Math.ceil((qg().p-Date.now())/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60,z=function(x){return('0'+x).slice(-2)};return(h?h+':':'')+z(m)+':'+z(c)}
 function qBak(){try{localStorage.setItem('rekapan_bak_q',JSON.stringify(st));localStorage.setItem('rekapan_bak_qt',String(Date.now()))}catch(e){}}
 function qDl(){var q=qg();if(q.d)return;q.d=1;qSv();try{var d=new Date(),n='cadangan-rekapan-'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.json',u=URL.createObjectURL(new Blob([JSON.stringify(st)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download=n;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},4000)}catch(e){}}
 function qHit(r){var q=qg(),n=Date.now();if(q.p&&n<q.p)return;q.r=r;q.p=r=='est'?Math.max((q.s||n)+QCYC,n+60000):n+(r=='srv'?QSRV:QNET);q.d=0;qSv();qBak();if(r!='net'&&!fbOn())qDl();if(DB&&DB.fbTake)DB.fbTake();qUI()}
-function qAdd(t0){var q=qg(),n=Date.now();if(!q.s)q.s=t0;q.n++;q.ms+=Math.max(0,n-t0);qSv();if(q.ms>=QLIM&&!q.ov)qHit('est')}
+function qAdd(t0){var q=qg(),n=Date.now();if(!q.s)q.s=t0;q.n++;q.ms+=Math.max(0,n-t0);qSv();if(q.ms>=QLIM&&!q.ov&&!fbOn())qHit('est')}
 var QRX=/too much computer time|too many times|service invoked|quota|kuota/i;
 function qFail(t0,e){if(e&&(e.srv||e.q===1)){qAdd(t0);qf=0;if(e.q===1||QRX.test(e.message||''))qHit('srv');return}
  if(navigator.onLine===false){qf=0;return}qf++;if(qf>=5)qHit('net')}
@@ -927,7 +927,7 @@ function qUI(){var c=document.getElementById('qcd');if(c)c.textContent=qLeft();i
 function qSyx(k,t){if(typeof QLIM=='undefined')return[k,t];var q=qg();
  if(fbMode()&&!(DB.bad&&DB.bad())){if(k=='busy')return[k,t];var pz=q.p&&Date.now()<q.p?' · Sheet lanjut '+qLeft():'';if(k=='ok')return['warn','🔥 Cadangan Firebase · '+t.replace('Tersinkron · ','sinkron ')+pz];if(k=='off')return['warn','🔥 Cadangan Firebase aktif'+pz]}
  if(q.p&&Date.now()<q.p)return['off','⏸ '+(q.r=='est'?'Kuota penuh · lanjut ':q.r=='srv'?'Kuota Google habis · coba lagi ':'Sinkron dijeda · coba lagi ')+qLeft()];
- if(k=='ok'&&sheetUrl()&&!fbMode())t+=' · 📗 Sheet';if(k!='loc'&&sheetUrl()){var p=qPct();if(p>=QW*100){t+=' · ⏱ '+p+'%';if(k=='ok')k='warn'}}return[k,t]}
+ if(k=='ok'&&sheetUrl()&&!fbMode())t+=' · 📗 Sheet';if(k!='loc'&&sheetUrl()){var p=qPct();if(p>=QW*100&&!fbOn()){t+=' · ⏱ '+p+'%';if(k=='ok')k='warn'}}return[k,t]}
 function qModal(){var q=qg(),pa=qBlk(),p=qPct(),bt=0;try{bt=+localStorage.getItem('rekapan_bak_qt')||0}catch(e){}
  var h='<h3>⏱ Kuota sinkron</h3>';
  if(pa){h+='<p style="font-weight:700">'+(q.r=='est'?'Kuota diperkirakan penuh':q.r=='srv'?'Kuota harian Google habis':'Sinkron dijeda (koneksi ke Sheet gagal berulang)')+'</p><p>'+(q.r=='est'?'Sinkron lanjut otomatis':'Mencoba lagi')+' dalam <b id="qcd">'+qLeft()+'</b></p><p>Selama dijeda, data tetap tersimpan di HP dan disalin sebagai cadangan otomatis. Begitu kuota pulih, data otomatis tersinkron lagi.</p>'}
@@ -937,7 +937,7 @@ function qModal(){var q=qg(),pa=qBlk(),p=qPct(),bt=0;try{bt=+localStorage.getIte
  h+='<button class="mbtn go" data-a="bs">💾 Bagikan file cadangan</button>';
  if(pa)h+='<button class="mbtn" data-a="qrt">Coba sinkron sekarang</button>';
  h+='<button class="mbtn" data-a="shset">☁️ Pengaturan Google Sheet</button><button class="mbtn" data-a="fbset">🔥 Cadangan Firebase'+(fbOn()?' ✓':'')+'</button>';modal(h)}
-function qClick(){if(qBlk()||qPct()>=QW*100)qModal();else sheetSetup()}
+function qClick(){if(qBlk()||(qPct()>=QW*100&&!fbOn()))qModal();else sheetSetup()}
 setInterval(function(){var q=qg();if(!q.p)return;if(Date.now()>=q.p)qResume(false);else qUI()},1000);
 function sheetUrl(){try{return localStorage.getItem('rekapan_su')||''}catch(e){return ''}}
 function sheetKey(){try{return localStorage.getItem('rekapan_sk')||''}catch(e){return ''}}
