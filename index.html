@@ -732,10 +732,20 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
    if(!jj||jj.err){bad('❌ Kode rahasia salah, ditolak server'+(jj&&jj.err?' ('+jj.err+')':'')+'. Tidak tersambung.');return}
    try{localStorage.setItem('rekapan_su',su);localStorage.setItem('rekapan_sk',sk)}catch(e){}location.reload()}).catch(function(e){clearTimeout(tm);bad(e&&e.name=='AbortError'?'❌ Server tidak merespons (timeout). Periksa alamat dan koneksi internet. Tidak tersambung.':'❌ Tidak bisa menghubungi alamat itu. Periksa alamat dan koneksi internet. Tidak tersambung.')})}
  else if(a=='qm')qModal();
+ else if(a=='fbset')fbSetup();
+ else if(a=='fbr'){var fbRl="rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /dims/{kode}/d/{doc} {\n      allow read: if true;\n      allow write: if request.resource.data.keys().hasOnly(['j','u']);\n    }\n  }\n}";var fbOk=function(){b.textContent='✓ Aturan tersalin';setTimeout(function(){b.textContent='📋 Salin aturan Firestore'},1800)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(fbRl).then(fbOk,function(){prompt('Salin aturan ini:',fbRl)})}else{prompt('Salin aturan ini:',fbRl)}}
+ else if(a=='fbx'){try{localStorage.removeItem('rekapan_fb');localStorage.removeItem('rekapan_fbq')}catch(e){}location.reload()}
+ else if(a=='fbs'){var fbT=document.getElementById('fbc').value||'',fbA=/apiKey["']?\s*[:=]\s*["']([^"']+)["']/.exec(fbT),fbP=/projectId["']?\s*[:=]\s*["']([^"']+)["']/.exec(fbT),fbE=document.getElementById('fbm');
+  var fbBad=function(t){fbE.style.display='block';fbE.style.color='#e5484d';fbE.textContent=t;b.disabled=false;b.textContent='Simpan & tes'};
+  if(!fbA||!fbP){fbBad('❌ apiKey / projectId tidak ditemukan. Tempel blok firebaseConfig dari Firebase.');return}
+  fbE.style.display='none';b.disabled=true;b.textContent='Memeriksa…';
+  var fbK={p:fbP[1],a:fbA[1]};
+  sha('fb:'+sheetKey()).then(function(hh){var ctl2=new AbortController(),tm2=setTimeout(function(){ctl2.abort()},15000);
+   return fetch('https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(fbK.p)+'/databases/(default)/documents/dims/'+hh+':runQuery?key='+encodeURIComponent(fbK.a),{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl2.signal,body:JSON.stringify({structuredQuery:{from:[{collectionId:'d'}],limit:1}})}).then(function(r){clearTimeout(tm2);return r.json().catch(function(){return null}).then(function(j){if(r.ok){try{localStorage.setItem('rekapan_fb',JSON.stringify(fbK))}catch(e){}location.reload();return}var m=(j&&j.error&&j.error.message)||('HTTP '+r.status);fbBad(r.status==403?'❌ Ditolak (403). Pasang aturan Firestore dulu (tombol Salin aturan Firestore) lalu Publish. '+m:r.status==404?'❌ Database Firestore belum dibuat atau projectId salah. '+m:'❌ '+m)})})}).catch(function(e){fbBad(e&&e.name=='AbortError'?'❌ Firebase tidak merespons (timeout).':'❌ Tidak bisa menghubungi Firebase. Periksa koneksi internet.')})}
  else if(a=='shset')sheetSetup();
  else if(a=='qrt'){qResume(true);document.getElementById('ov').style.display='none'}
  else if(a=='shx'){try{localStorage.removeItem('rekapan_su');localStorage.removeItem('rekapan_sk')}catch(e){}location.reload()}
- else if(a=='shl'){var lk=location.origin+location.pathname+'#setup='+btoa(unescape(encodeURIComponent(JSON.stringify({u:sheetUrl(),k:sheetKey()})))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');var okc=function(){b.textContent='✓ Link tersalin';setTimeout(function(){b.textContent='🔗 Salin link setup'},1800)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lk).then(okc,function(){prompt('Salin link ini:',lk)})}else{prompt('Salin link ini:',lk)}}
+ else if(a=='shl'){var lk=location.origin+location.pathname+'#setup='+btoa(unescape(encodeURIComponent(JSON.stringify({u:sheetUrl(),k:sheetKey(),f:fbCfg()||undefined})))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');var okc=function(){b.textContent='✓ Link tersalin';setTimeout(function(){b.textContent='🔗 Salin link setup'},1800)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lk).then(okc,function(){prompt('Salin link ini:',lk)})}else{prompt('Salin link ini:',lk)}}
  else if(a=='mcat'){mcat=i||'';rmp()}
  else if(a=='im2'){var ni=impMenu();mmod();var hh=document.querySelector('.mdl h3');if(hh)hh.insertAdjacentHTML('afterend','<p style="color:#12a150;font-weight:700">✅ '+ni+' menu berhasil diimpor</p>')}
  else if(a=='gv')gview();
@@ -838,7 +848,7 @@ function sy(t){var e=document.getElementById('sy');if(!e)return;var k=/Tersinkro
 function saveLocal(){try{localStorage.setItem('rekapan',JSON.stringify(st))}catch(e){}}
 var lastM={trx:{},hist:{},lun:{}},KD=[['trx','d'],['hist','at'],['lun','at']];
 function mkey(x,f){return String(x[f]).slice(0,7).replace('-','')}
-function pushRemote(force){if(!DB){if(sheetUrl())sy('📴 Offline · tersimpan');return}if(qBlk()){saveLocal();clearTimeout(qbt);qbt=setTimeout(qBak,700);sy('⚠️ jeda');return}clearTimeout(pt);sy('☁️ Menyimpan…');pt=setTimeout(function(){
+function pushRemote(force){if(!DB){if(sheetUrl())sy('📴 Offline · tersimpan');return}if(qBlk()&&!fbOn()){saveLocal();clearTimeout(qbt);qbt=setTimeout(qBak,700);sy('⚠️ jeda');return}clearTimeout(pt);sy('☁️ Menyimpan…');pt=setTimeout(function(){
  var c={units:st.units,data:st.data,pays:st.pays,menu:st.menu,carry:st.carry,carryP:st.carryP,seq:st.seq},s=JSON.stringify(c),t=st._t||Date.now(),tw=[];
  KD.forEach(function(k){var G={};st[k[0]].forEach(function(x){var m=mkey(x,k[1]);(G[m]=G[m]||[]).push(x)});Object.keys(lastM[k[0]]).forEach(function(m){if(!G[m])G[m]=[]});
   Object.keys(G).forEach(function(m){var js=JSON.stringify(G[m]);if(js!=lastM[k[0]][m])tw.push([k[0],m,js])})});
@@ -908,38 +918,93 @@ function qPct(){return Math.min(100,Math.round(qg().ms/QLIM*100))}
 function qLeft(){var s=Math.max(0,Math.ceil((qg().p-Date.now())/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60,z=function(x){return('0'+x).slice(-2)};return(h?h+':':'')+z(m)+':'+z(c)}
 function qBak(){try{localStorage.setItem('rekapan_bak_q',JSON.stringify(st));localStorage.setItem('rekapan_bak_qt',String(Date.now()))}catch(e){}}
 function qDl(){var q=qg();if(q.d)return;q.d=1;qSv();try{var d=new Date(),n='cadangan-rekapan-'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.json',u=URL.createObjectURL(new Blob([JSON.stringify(st)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download=n;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},4000)}catch(e){}}
-function qHit(r){var q=qg(),n=Date.now();if(q.p&&n<q.p)return;q.r=r;q.p=r=='est'?Math.max((q.s||n)+QCYC,n+60000):n+(r=='srv'?QSRV:QNET);q.d=0;qSv();qBak();if(r!='net')qDl();qUI()}
+function qHit(r){var q=qg(),n=Date.now();if(q.p&&n<q.p)return;q.r=r;q.p=r=='est'?Math.max((q.s||n)+QCYC,n+60000):n+(r=='srv'?QSRV:QNET);q.d=0;qSv();qBak();if(r!='net'&&!fbOn())qDl();if(DB&&DB.fbTake)DB.fbTake();qUI()}
 function qAdd(t0){var q=qg(),n=Date.now();if(!q.s)q.s=t0;q.n++;q.ms+=Math.max(0,n-t0);qSv();if(q.ms>=QLIM&&!q.ov)qHit('est')}
 var QRX=/too much computer time|too many times|service invoked|quota|kuota/i;
 function qFail(t0,e){if(e&&(e.srv||e.q===1)){qAdd(t0);qf=0;if(e.q===1||QRX.test(e.message||''))qHit('srv');return}
  if(navigator.onLine===false){qf=0;return}qf++;if(qf>=5)qHit('net')}
 function qUI(){var c=document.getElementById('qcd');if(c)c.textContent=qLeft();if(qBlk())sy('⚠️ jeda')}
 function qSyx(k,t){if(typeof QLIM=='undefined')return[k,t];var q=qg();
+ if(fbMode()&&!(DB.bad&&DB.bad())){if(k=='busy')return[k,t];var pz=q.p&&Date.now()<q.p?' · Sheet lanjut '+qLeft():'';if(k=='ok')return['warn','🔥 Cadangan Firebase · '+t.replace('Tersinkron · ','sinkron ')+pz];if(k=='off')return['warn','🔥 Cadangan Firebase aktif'+pz]}
  if(q.p&&Date.now()<q.p)return['off','⏸ '+(q.r=='est'?'Kuota penuh · lanjut ':q.r=='srv'?'Kuota Google habis · coba lagi ':'Sinkron dijeda · coba lagi ')+qLeft()];
- if(k!='loc'&&sheetUrl()){var p=qPct();if(p>=QW*100){t+=' · ⏱ '+p+'%';if(k=='ok')k='warn'}}return[k,t]}
+ if(k=='ok'&&sheetUrl()&&!fbMode())t+=' · 📗 Sheet';if(k!='loc'&&sheetUrl()){var p=qPct();if(p>=QW*100){t+=' · ⏱ '+p+'%';if(k=='ok')k='warn'}}return[k,t]}
 function qModal(){var q=qg(),pa=qBlk(),p=qPct(),bt=0;try{bt=+localStorage.getItem('rekapan_bak_qt')||0}catch(e){}
  var h='<h3>⏱ Kuota sinkron</h3>';
  if(pa){h+='<p style="font-weight:700">'+(q.r=='est'?'Kuota diperkirakan penuh':q.r=='srv'?'Kuota harian Google habis':'Sinkron dijeda (koneksi ke Sheet gagal berulang)')+'</p><p>'+(q.r=='est'?'Sinkron lanjut otomatis':'Mencoba lagi')+' dalam <b id="qcd">'+qLeft()+'</b></p><p>Selama dijeda, data tetap tersimpan di HP dan disalin sebagai cadangan otomatis. Begitu kuota pulih, data otomatis tersinkron lagi.</p>'}
  else h+='<p>Perkiraan pemakaian: <b>'+p+'%</b> ('+Math.round(q.ms/60000)+' dari '+Math.round(QLIM/60000)+' menit per hari, '+q.n+' kali sinkron).</p><div style="height:10px;border-radius:6px;background:rgba(127,127,127,.2);overflow:hidden;margin:6px 0 10px"><div style="height:100%;width:'+p+'%;background:'+(p>=80?'#e08a00':'#12a150')+'"></div></div><p>Dihitung dari waktu tunggu tiap sinkron di HP ini. Pemakaian HP lain yang memakai Sheet yang sama tidak ikut terhitung.</p>';
  if(bt)h+='<p>Cadangan otomatis terakhir: '+new Date(bt).toLocaleString('id-ID')+'</p>';
+ if(fbOn()){var fi=DB&&DB.info?DB.info():null;h+='<p style="margin-top:10px">🔥 <b>Cadangan Firebase:</b> '+(fi&&fi.m=='fb'?'<b style="color:#e08a00">AKTIF</b> — data tersinkron lewat Firebase sampai kuota Sheet pulih, lalu otomatis kembali ke Sheet.':'siaga (dipakai otomatis jika Sheet terjeda).')+(fi&&fi.n?' Antrean menunggu masuk ke Sheet: '+fi.n+' data.':'')+'</p>'}
  h+='<button class="mbtn go" data-a="bs">💾 Bagikan file cadangan</button>';
  if(pa)h+='<button class="mbtn" data-a="qrt">Coba sinkron sekarang</button>';
- h+='<button class="mbtn" data-a="shset">☁️ Pengaturan Google Sheet</button>';modal(h)}
+ h+='<button class="mbtn" data-a="shset">☁️ Pengaturan Google Sheet</button><button class="mbtn" data-a="fbset">🔥 Cadangan Firebase'+(fbOn()?' ✓':'')+'</button>';modal(h)}
 function qClick(){if(qBlk()||qPct()>=QW*100)qModal();else sheetSetup()}
 setInterval(function(){var q=qg();if(!q.p)return;if(Date.now()>=q.p)qResume(false);else qUI()},1000);
 function sheetUrl(){try{return localStorage.getItem('rekapan_su')||''}catch(e){return ''}}
 function sheetKey(){try{return localStorage.getItem('rekapan_sk')||''}catch(e){return ''}}
-function sheetSetup(){modal('<h3>☁️ Google Sheet</h3><p style="font-size:13px;color:var(--mut);margin:0 0 10px">Tempel alamat Web App dan kode rahasia dari Apps Script.</p><input id="shu" placeholder="https://script.google.com/macros/s/.../exec" value="'+esc(sheetUrl())+'" style="width:100%;margin-bottom:8px"><input id="shk" type="password" placeholder="Kode rahasia'+(sheetKey()?' (kosongkan = tetap)':'')+'" style="width:100%"><div id="shm" style="display:none;color:#e5484d;font-size:13px;line-height:1.4;margin:8px 0 2px"></div><button class="mbtn go" data-a="shs">Simpan &amp; hubungkan</button>'+(sheetUrl()?'<button class="mbtn" data-a="qm">⏱ Pemakaian kuota</button>':'')+(sheetUrl()&&sheetKey()?'<button class="mbtn" data-a="shl">🔗 Salin link setup</button>':'')+(sheetUrl()?'<button class="mbtn" data-a="shx">Putuskan dari Google Sheet</button>':''))}
-function sheetDB(){var U=sheetUrl(),K=sheetKey(),cache={},ds={},cs={},since=0,busy=false;
+function sheetSetup(){modal('<h3>☁️ Google Sheet</h3><p style="font-size:13px;color:var(--mut);margin:0 0 10px">Tempel alamat Web App dan kode rahasia dari Apps Script.</p><input id="shu" placeholder="https://script.google.com/macros/s/.../exec" value="'+esc(sheetUrl())+'" style="width:100%;margin-bottom:8px"><input id="shk" type="password" placeholder="Kode rahasia'+(sheetKey()?' (kosongkan = tetap)':'')+'" style="width:100%"><div id="shm" style="display:none;color:#e5484d;font-size:13px;line-height:1.4;margin:8px 0 2px"></div><button class="mbtn go" data-a="shs">Simpan &amp; hubungkan</button>'+(sheetUrl()?'<button class="mbtn" data-a="qm">⏱ Pemakaian kuota</button>':'')+(sheetUrl()&&sheetKey()?'<button class="mbtn" data-a="fbset">🔥 Cadangan Firebase'+(fbOn()?' ✓':'')+'</button>':'')+(sheetUrl()&&sheetKey()?'<button class="mbtn" data-a="shl">🔗 Salin link setup</button>':'')+(sheetUrl()?'<button class="mbtn" data-a="shx">Putuskan dari Google Sheet</button>':''))}
+/* ===== Cadangan Firebase (Firestore REST): aktif otomatis saat Apps Script terjeda/gagal, kembali ke Sheet saat pulih ===== */
+function fbCfg(){try{var c=JSON.parse(localStorage.getItem('rekapan_fb')||'null');return c&&c.p&&c.a?c:null}catch(e){return null}}
+function fbOn(){return !!(fbCfg()&&sheetUrl()&&sheetKey())}
+function fbMode(){return !!(DB&&DB.mode&&DB.mode()=='fb')}
+function fbQ(){try{return JSON.parse(localStorage.getItem('rekapan_fbq')||'{}')||{}}catch(e){return {}}}
+function fbQs(q){try{localStorage.setItem('rekapan_fbq',JSON.stringify(q))}catch(e){}}
+function fbSetup(){var c=fbCfg();modal('<h3>🔥 Cadangan Firebase</h3><p style="font-size:13px;color:var(--mut);margin:0 0 10px">Sinkron cadangan otomatis saat Apps Script terjeda / kena limit. Begitu limit selesai, aplikasi kembali sendiri ke Google Sheet.</p><textarea id="fbc" rows="4" placeholder="Tempel firebaseConfig (berisi apiKey dan projectId)" style="width:100%;margin-bottom:8px">'+(c?esc('apiKey: "'+c.a+'",\nprojectId: "'+c.p+'"'):'')+'</textarea><div id="fbm" style="display:none;font-size:13px;line-height:1.4;margin:8px 0 2px"></div><button class="mbtn go" data-a="fbs">Simpan &amp; tes</button><button class="mbtn" data-a="fbr">📋 Salin aturan Firestore</button>'+(c?'<button class="mbtn" data-a="fbx">Matikan cadangan Firebase</button>':''))}
+function fbDB(){var C=fbCfg(),cache={},us={},ds={},cs={},since=0,busy=false,H=null,iv=null,x={err:0};
+ function ready(){return H?Promise.resolve():sha('fb:'+sheetKey()).then(function(v){H=v})}
+ function base(){return 'https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(C.p)+'/databases/(default)/documents/dims/'+H}
+ function rq(u,o){o.headers={'Content-Type':'application/json'};return fetch(u+(u.indexOf('?')<0?'?':'&')+'key='+encodeURIComponent(C.a),o).then(function(r){return r.text().then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}if(!r.ok){var er=new Error(j&&j.error&&j.error.message||'HTTP '+r.status);er.code=r.status;throw er}return j})})}
+ function snap(p){var d=cache[p];return{exists:d!==undefined,id:p.split('/')[1],data:function(){return d}}}
+ function lst(c){return Object.keys(cache).filter(function(p){return p.indexOf(c+'/')==0}).map(snap)}
+ function pull(full){if(full){since=0;us={}}return ready().then(function(){return rq(base()+':runQuery',{method:'POST',body:JSON.stringify({structuredQuery:{from:[{collectionId:'d'}],where:{fieldFilter:{field:{fieldPath:'u'},op:'GREATER_THAN',value:{integerValue:String(since)}}},orderBy:[{field:{fieldPath:'u'},direction:'ASCENDING'}]}})})}).then(function(a){var ch={},cc={};(a||[]).forEach(function(r){var d=r.document;if(!d||!d.fields||!d.fields.j)return;var id=d.name.split('/').pop(),p=id.replace('__','/'),u=+(d.fields.u&&d.fields.u.integerValue)||0,v;try{v=JSON.parse(d.fields.j.stringValue)}catch(e){return}if(u>since)since=u;if(us[p]!==undefined&&us[p]>=u)return;us[p]=u;cache[p]=v;ch[p]=1;cc[p.split('/')[0]]=1});x.err=0;return{ch:ch,cc:cc}},function(e){x.err=1;throw e})}
+ function emit(r){Object.keys(r.ch).forEach(function(p){(ds[p]||[]).forEach(function(f){f(snap(p))})});Object.keys(r.cc).forEach(function(c){(cs[c]||[]).forEach(function(f){f({docs:lst(c)})})})}
+ function tick(){if(busy||document.hidden)return;busy=true;var was=x.err;pull().then(function(r){busy=false;emit(r);if(was)sy('☁️ Tersinkron')}).catch(function(){busy=false;sy(navigator.onLine===false?'📴 Offline · tersimpan di HP':'⚠️ Cadangan Firebase gagal sinkron')})}
+ function put(p,v){var u=Date.now();return ready().then(function(){return rq(base()+'/d/'+p.replace('/','__'),{method:'PATCH',body:JSON.stringify({fields:{j:{stringValue:JSON.stringify(v)},u:{integerValue:String(u)}}})})}).then(function(){cache[p]=JSON.parse(JSON.stringify(v));us[p]=u;x.err=0},function(e){x.err=1;throw e})}
+ x.doc=function(p){return{get:function(){return Promise.resolve(snap(p))},set:function(v){return put(p,v)},onSnapshot:function(f){(ds[p]=ds[p]||[]).push(f);setTimeout(function(){f(snap(p))},0)}}};
+ x.collection=function(c){return{onSnapshot:function(f){(cs[c]=cs[c]||[]).push(f);setTimeout(function(){f({docs:lst(c)})},0)}}};
+ x.pullAll=function(){return pull(true).then(function(r){emit(r)})};
+ x.poke=tick;
+ x.start=function(){if(!iv)iv=setInterval(tick,20000);tick()};
+ x.stop=function(){clearInterval(iv);iv=null};
+ x.raw=function(p,v){if(p!='app/pin'&&!v._t)return Promise.resolve();if(cache[p]&&(p=='app/pin'||cache[p]._t>=v._t))return Promise.resolve();return put(p,v).catch(function(){})};
+ return x}
+function hybridDB(){var sh=null,fb=fbDB(),mode='fb',dl=[],cl=[],tr=0,rp=0,wt=0,api={};
+ function attach(){dl.forEach(function(z){sh.doc(z[0]).onSnapshot(z[1])});cl.forEach(function(z){sh.collection(z[0]).onSnapshot(z[1])})}
+ function seed(){fb.raw('app/core',{units:st.units,data:st.data,pays:st.pays,menu:st.menu,carry:st.carry,carryP:st.carryP,seq:st.seq,_t:st._tc||st._t||0});
+  KD.forEach(function(k){var G={};(st[k[0]]||[]).forEach(function(z){var m=mkey(z,k[1]);(G[m]=G[m]||[]).push(z)});Object.keys(G).forEach(function(m){fb.raw(k[0]+'/'+m,{items:G[m],_t:(st._tt&&st._tt[k[0]+m])||0})})});
+  if(pinH)fb.raw('app/pin',{h:pinH})}
+ function toFb(){if(mode=='fb')return;mode='fb';if(sh){sh.stop();sh=null}fb.pullAll().then(function(){seed();fb.start();sy('☁️ Tersinkron')},function(){fb.start()})}
+ function viaFb(p,v){return fb.doc(p).set(v).then(function(r){var q=fbQ();q[p]=1;fbQs(q);return r})}
+ function replay(){var q0=fbQ(),ks=Object.keys(q0);if(!ks.length||rp||mode!='sheet'||!sh||qBlk())return Promise.resolve();rp=1;var s0=sh;
+  var del=function(p){var q=fbQ();delete q[p];fbQs(q)};
+  return fb.pullAll().then(function(){return Promise.all(ks.map(function(p){return fb.doc(p).get().then(function(f){if(!f.exists){del(p);return}var v=f.data(),c=s0.doc(p);return c.get().then(function(cur){if(cur.exists&&v&&v._t&&cur.data()&&cur.data()._t>=v._t)return;return c.set(v)}).then(function(){del(p)})})}))}).then(function(){rp=0;sy('☁️ Tersinkron')},function(){rp=0})}
+ function tryRecover(){if(mode!='fb'||tr||qBlk()||navigator.onLine===false)return;tr=1;sheetDB().then(function(db){sh=db;mode='sheet';fb.stop();attach();tr=0;sy('☁️ Menghubungkan…');return replay()}).catch(function(){tr=0})}
+ function watch(){wt++;if(mode=='sheet'){if(qBlk())toFb();else if(wt%6==0&&Object.keys(fbQ()).length)replay()}else if(wt%12==0)tryRecover()}
+ api.mode=function(){return mode};
+ api.bad=function(){return !!fb.err};
+ api.info=function(){return{m:mode,n:Object.keys(fbQ()).length}};
+ api.fbTake=toFb;
+ api.raw=fb.raw;
+ api.poke=function(){if(mode=='sheet'){if(sh)sh.poke()}else{tryRecover();fb.poke()}};
+ api.doc=function(p){return{
+  get:function(){return(mode=='sheet'&&sh?sh:fb).doc(p).get()},
+  set:function(v){if(mode=='sheet'&&sh&&!qBlk()){return sh.doc(p).set(v).then(function(r){var q=fbQ();if(q[p]){delete q[p];fbQs(q)}return r},function(e){if(navigator.onLine===false)throw e;return viaFb(p,v)})}return viaFb(p,v)},
+  onSnapshot:function(f){dl.push([p,f]);fb.doc(p).onSnapshot(f);if(sh)sh.doc(p).onSnapshot(f)}}};
+ api.collection=function(c){return{onSnapshot:function(f){cl.push([c,f]);fb.collection(c).onSnapshot(f);if(sh)sh.collection(c).onSnapshot(f)}}};
+ api.init=function(){var fin=function(){setInterval(watch,5000);document.addEventListener('visibilitychange',function(){if(!document.hidden&&mode=='fb')fb.poke()});return api};
+  var go=function(){mode='fb';return fb.pullAll().then(function(){seed();fb.start();return fin()})};
+  if(qBlk())return go();
+  return sheetDB().then(function(db){sh=db;mode='sheet';setTimeout(replay,2500);return fin()},go)};
+ return api}
+function sheetDB(){var U=sheetUrl(),K=sheetKey(),cache={},ds={},cs={},since=0,busy=false,iv=null,dead=false;
  function call(b){if(qBlk()){var eb=new Error('kuota dijeda');eb.qb=1;return Promise.reject(eb)}b.k=K;var t0=Date.now();return fetch(U,{method:'POST',body:JSON.stringify(b)}).then(function(r){return r.text()}).then(function(x){var j;try{j=JSON.parse(x)}catch(e){var e0=new Error('bukan JSON');e0.q=QRX.test(x)?1:0;throw e0}if(!j||j.err){var er=new Error(j&&j.err||'gagal');er.srv=1;throw er}return j}).then(function(j){qf=0;qAdd(t0);return j},function(e){qFail(t0,e);throw e})}
  function snap(p){var d=cache[p];return{exists:d!==undefined,id:p.split('/')[1],data:function(){return d}}}
  function lst(c){return Object.keys(cache).filter(function(p){return p.indexOf(c+'/')==0}).map(snap)}
  function pull(){return call({a:'pull',since:since}).then(function(j){var ch={},cc={};(j.docs||[]).forEach(function(d){cache[d.p]=d.v;ch[d.p]=1;cc[d.p.split('/')[0]]=1;if(d.u>since)since=d.u});return{ch:ch,cc:cc}})}
- function tick(){if(busy||qBlk())return;busy=true;pull().then(function(r){busy=false;if(document.getElementById('sy').dataset.s!='busy')sy('☁️ Tersinkron');Object.keys(r.ch).forEach(function(p){(ds[p]||[]).forEach(function(f){f(snap(p))})});Object.keys(r.cc).forEach(function(c){(cs[c]||[]).forEach(function(f){f({docs:lst(c)})})})}).catch(function(){busy=false;sy(navigator.onLine===false?'📴 Offline · tersimpan di HP':'⚠️ Gagal sinkron')})}
- var db={poke:function(){tick()},doc:function(p){return{get:function(){return Promise.resolve(snap(p))},set:function(v){return call({a:'set',p:p,v:v}).then(function(){cache[p]=JSON.parse(JSON.stringify(v))})},onSnapshot:function(f){(ds[p]=ds[p]||[]).push(f);setTimeout(function(){f(snap(p))},0)}}},
+ function tick(){if(dead||busy||qBlk())return;busy=true;pull().then(function(r){busy=false;if(document.getElementById('sy').dataset.s!='busy')sy('☁️ Tersinkron');Object.keys(r.ch).forEach(function(p){(ds[p]||[]).forEach(function(f){f(snap(p))})});Object.keys(r.cc).forEach(function(c){(cs[c]||[]).forEach(function(f){f({docs:lst(c)})})})}).catch(function(){busy=false;sy(navigator.onLine===false?'📴 Offline · tersimpan di HP':'⚠️ Gagal sinkron')})}
+ var db={poke:function(){tick()},stop:function(){dead=true;clearInterval(iv)},doc:function(p){return{get:function(){return Promise.resolve(snap(p))},set:function(v){return call({a:'set',p:p,v:v}).then(function(){cache[p]=JSON.parse(JSON.stringify(v))})},onSnapshot:function(f){(ds[p]=ds[p]||[]).push(f);setTimeout(function(){f(snap(p))},0)}}},
   collection:function(c){return{onSnapshot:function(f){(cs[c]=cs[c]||[]).push(f);setTimeout(function(){f({docs:lst(c)})},0)}}}};
- return pull().then(function(){setInterval(tick,10000);document.addEventListener('visibilitychange',function(){if(!document.hidden)tick()});return db}).catch(function(e){sy(e&&e.srv?'⚠️ Kode rahasia salah / ditolak server · ketuk di sini untuk atur':'📴 Tidak bisa terhubung ke Sheet · ketuk di sini untuk atur');throw e})}
-function boot(){if(DB)return;if(sheetUrl()&&sheetKey()&&qBlk()){dbChecked=true;var se=document.getElementById('sy');se.onclick=qClick;se.style.cursor='pointer';sy('⚠️ jeda');return}var DBP=sheetUrl()&&sheetKey()?sheetDB():((window.claude&&window.claude.use)?claude.use('db'):null);
+ return pull().then(function(){iv=setInterval(tick,10000);document.addEventListener('visibilitychange',function(){if(!document.hidden&&!dead)tick()});return db}).catch(function(e){sy(e&&e.srv?'⚠️ Kode rahasia salah / ditolak server · ketuk di sini untuk atur':'📴 Tidak bisa terhubung ke Sheet · ketuk di sini untuk atur');throw e})}
+function boot(){if(DB)return;if(sheetUrl()&&sheetKey()&&qBlk()&&!fbOn()){dbChecked=true;var se=document.getElementById('sy');se.onclick=qClick;se.style.cursor='pointer';sy('⚠️ jeda');return}var DBP=sheetUrl()&&sheetKey()?(fbOn()?hybridDB().init():sheetDB()):((window.claude&&window.claude.use)?claude.use('db'):null);
 document.getElementById('sy').onclick=qClick;document.getElementById('sy').style.cursor='pointer';
 if(DBP){
  DBP.then(function(db){dbChecked=true;
@@ -955,7 +1020,7 @@ if(DBP){
  }).catch(function(){dbChecked=true;if(!okS())gate(pinH?'enter':'set')})
 }else{dbChecked=true;sy('📴 Mode lokal · ketuk')}}
 /* setup otomatis dari link #setup=... (HP baru) */
-(function(){try{var m=/^#setup=([A-Za-z0-9_-]+)$/.exec(location.hash||'');if(!m)return;var j=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')))));if(j&&/^https:\/\/script\.google(usercontent)?\.com\//.test(j.u)&&j.k){localStorage.setItem('rekapan_su',j.u);localStorage.setItem('rekapan_sk',j.k)}history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();
+(function(){try{var m=/^#setup=([A-Za-z0-9_-]+)$/.exec(location.hash||'');if(!m)return;var j=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')))));if(j&&/^https:\/\/script\.google(usercontent)?\.com\//.test(j.u)&&j.k){localStorage.setItem('rekapan_su',j.u);localStorage.setItem('rekapan_sk',j.k);if(j.f&&j.f.p&&j.f.a)localStorage.setItem('rekapan_fb',JSON.stringify({p:String(j.f.p),a:String(j.f.a)}))}history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();
 boot();
 window.addEventListener('offline',function(){if(sheetUrl())sy('📴 Offline · tersimpan')});
 window.addEventListener('online',function(){if(DB)pushRemote(true);else boot()});
@@ -976,7 +1041,7 @@ render();
   else if(home()&&hs){hs=false;skip++;try{history.back()}catch(e){skip--}}
  }
  try{if(history.state&&history.state.rk===1)hs=true}catch(e){}
- ['hed','trdet','tre','mmod','mgr','bk','mo','sheetSetup','qModal','pvm'].forEach(function(nm){
+ ['hed','trdet','tre','mmod','mgr','bk','mo','sheetSetup','qModal','fbSetup','pvm'].forEach(function(nm){
   var f=window[nm];if(typeof f!='function')return;orig[nm]=f;
   window[nm]=function(){
    var a=Array.prototype.slice.call(arguments);

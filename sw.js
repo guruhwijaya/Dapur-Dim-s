@@ -1,5 +1,5 @@
 // Service worker Rekapan Tagihan: supaya aplikasi bisa dibuka saat offline
-var C = 'rekapan-v2';
+var C = 'rekapan-v3';
 self.addEventListener('install', function (e) {
   self.skipWaiting();
   e.waitUntil(caches.open(C).then(function (c) { return c.addAll(['./','manifest.json','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png']); }).catch(function () {}));
@@ -9,6 +9,7 @@ self.addEventListener('fetch', function (e) {
   var r = e.request;
   if (r.method !== 'GET') return;
   var u = new URL(r.url);
+  if (u.hostname === 'firestore.googleapis.com') return;
   if (u.hostname === 'script.google.com' || u.hostname.endsWith('googleusercontent.com')) return;
   e.respondWith(
     fetch(r).then(function (res) {
