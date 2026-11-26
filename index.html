@@ -1039,6 +1039,8 @@ window.addEventListener('offline',function(){if(sheetUrl())sy('📴 Offline · t
 window.addEventListener('online',function(){if(DB)pushRemote(true);else boot()});
 setInterval(function(){if(!DB&&sheetUrl()&&sheetKey()&&navigator.onLine!==false)boot()},30000);
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){});
+/* HP baru: tombol sambung otomatis di layar awal */
+if(DEFENC&&!sheetUrl()){var hb=document.createElement('button');hb.textContent='⚡ HP baru? Hubungkan otomatis';hb.style.cssText='position:fixed;left:24px;right:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:100000;padding:14px;border:0;border-radius:14px;background:#fff;color:#111;font:700 15px system-ui,sans-serif';hb.onclick=function(){document.getElementById('ov').style.zIndex=100001;applyDefSetup()};document.body.appendChild(hb)}
 if(!okS())gate(pinH?'enter':(dbChecked?'set':'wait'));
 document.getElementById('rk').innerHTML=emp('box','Belum ada riwayat','Rekapan yang disimpan atau dilunasi akan muncul di sini.');
 render();
