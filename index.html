@@ -297,6 +297,7 @@ body:has(#p4.on) #stk{box-shadow:none}
  <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;line-height:1.4;cursor:pointer"><input type="checkbox" id="pcx" style="width:20px;height:20px;flex:none;margin:1px 0 0"><span>Tutup nota jika masih kurang: kurangnya jadi <b>“Kurang sebelumnya”</b> di paling atas, nomor mulai dari 1 lagi</span></label></div>
 </div>
 
+<button class="wide img" id="gab" style="display:none;background:linear-gradient(90deg,#d62839,#ff8a1f)">📤 Kirim Nota Gabungan</button>
 <button class="wide img" id="im">🧾 Bagikan sebagai gambar (JPG)</button>
 <button class="wide ls" id="ls">✅ Tandai Lunas</button>
 </div>
@@ -593,7 +594,7 @@ function render(){
  document.getElementById('fu').textContent=u.n;
  var ps=document.getElementById('psr');if(ps)ps.textContent=T>0?(by>=T?'Lunas ✓':'Sisa '+rp(T-by)):'';
  document.getElementById('out').innerHTML=tbl(u.n,u.c,E,P,true,st.carry[u.id],st.carryP[u.id],tglCrp(u.id,st.carryP[u.id]));
- var ls=document.getElementById('ls');ls.disabled=!(T>0);
+ var ls=document.getElementById('ls');ls.disabled=!(T>0);var gb=document.getElementById('gab');gb.style.display=isGab(u)&&(E.length||st.carry[u.id])?'':'none';
  document.getElementById('un').disabled=!undo.length;document.getElementById('re').disabled=!redo.length;
  fUI();rbn();rtd();rmp();rg();rs();rlp();rtr();rl();rh();var hv=st.lun.length||st.hist.length;document.getElementById('sc').style.display=hv?'block':'none';document.getElementById('rk').style.display=hv?'none':'block';cuRun()}
 function fUI(){document.getElementById('ft').textContent=ed?'✏️ Edit tagihan':'➕ Tambah tagihan';document.getElementById('add').textContent=ed?'Simpan perubahan':'+ Tambah tagihan';document.getElementById('cn').style.display=ed?'block':'none'}
@@ -654,6 +655,36 @@ function nota(sp){
  var url=c.toDataURL('image/jpeg',.92);
  c.toBlob(function(b){var f=new File([b],'rekapan.jpg',{type:'image/jpeg'});LN={url:url,file:f,ids:sp.eids||null,u:sp.uid||null};
   pvm(url)},'image/jpeg',.92)}
+function isGab(u){return !!u&&/YENIS/i.test(u.n)}
+function notaGab(){
+ var u=cu();if(!isGab(u))return;var E=srt(st.data[u.id]||[]),P=st.pays[u.id]||[],cr=st.carry[u.id]||0,crp=st.carryP[u.id]||0;if(!E.length&&!cr)return;
+ if(!window._ng&&document.fonts&&document.fonts.load){window._ng=1;Promise.all(['60px "Arthemis"','52px "EnglandSig"','400 22px Poppins','500 22px Poppins','600 22px Poppins'].map(function(f){return document.fonts.load(f)})).then(notaGab,notaGab);return}
+ var W=680,pd=48,F='Poppins,Roboto,system-ui,Arial,sans-serif',INK='#1c1c1e',MUT='#7d776b',RED='#c0392b',GRN='#2e7d4f';
+ function X(e){return e.tx?fnd(st.trx,String(e.tx)):null}
+ var H=900+P.length*40+E.reduce(function(a,e){var x=X(e);return a+220+(x?x.items.length*66:40)},0),c=document.createElement('canvas');c.width=W;c.height=H;var g=c.getContext('2d'),y=96;
+ function txt(t,x,font,col,al,mw){g.font=font;g.fillStyle=col||INK;g.textAlign=al||'left';t=String(t);if(mw&&g.measureText(t).width>mw){while(t.length>3&&g.measureText(t+'…').width>mw)t=t.slice(0,-1);t+='…'}g.fillText(t,x,y)}
+ function row(l,r,font,col){txt(r,W-pd,font,col,'right');txt(l,pd,font,col,'left',W-2*pd-190)}
+ function line(h,col){g.fillStyle=col;g.fillRect(pd,y,W-2*pd,h)}
+ txt('North Joenstone',W/2,'60px "Arthemis",cursive',INK,'center',W-2*pd);y+=48;
+ txt("Dapur Dim's",W/2,'600 24px '+F,MUT,'center');y+=52;
+ txt(u.n,W/2,'600 40px '+F,INK,'center',W-2*pd);y+=36;
+ txt('NOTA GABUNGAN · '+E.length+' nota · '+fl(td()),W/2,'400 20px '+F,MUT,'center');y+=30;
+ if(cr>0){if(crp>0){y+=34;row('Bayar sebelumnya'+tglCrp(u.id,crp),rcp(crp),'500 22px '+F,'#1d4ed8')}y+=40;row('KURANG SEBELUMNYA',rcp(cr),'600 25px '+F,RED);y+=20;line(6,INK);y+=6}
+ E.forEach(function(e,i){var x=X(e);y+=14;g.fillStyle=col(e);nrr(g,pd-12,y,W-2*pd+24,52,12);g.fill();y+=35;
+  txt((i+1)+'. '+(e.carry?lab(e):hari(e.d)+', '+lab(e)),pd,'600 23px '+F,'#111','left',W-2*pd);y+=50;
+  if(e.note){txt(e.note,pd,'400 20px '+F,MUT,'left',W-2*pd);y+=34}
+  if(x){x.items.forEach(function(it){txt(it.n,pd,'600 23px '+F,INK,'left',W-2*pd);y+=29;row(it.q+' × '+rcc(it.p),rcp(it.p*it.q),'400 22px '+F);y+=37});
+   var d=e.v-x.T;if(d){row(d<0&&x.bay==-d?'Sudah dibayar':'Penyesuaian',(d<0?'- ':'+ ')+rcp(Math.abs(d)),'400 22px '+F,MUT);y+=37}}
+  else if(!e.carry){txt('(tanpa rincian menu)',pd,'400 20px '+F,MUT);y+=37}
+  y-=16;line(2,'#d9d1c1');y+=34;row('Subtotal',rcp(e.v),'600 25px '+F);y+=18;line(3,INK);y+=8});
+ var T=sumE(E)+cr,by=sumP(P),k=T-by;y+=24;
+ g.fillStyle='#111';nrr(g,pd-12,y,W-2*pd+24,86,16);g.fill();y+=55;row('TOTAL SEMUA',rcp(T),'600 32px '+F,'#fff');y+=31;
+ if(by>0){P.forEach(function(q){y+=40;row('Bayar · '+fs(q.d),rcp(q.v),'500 23px '+F,MUT)});y+=48;row(k>0?'SISA TAGIHAN':k<0?'LEBIH BAYAR':'LUNAS ✓',k?rcp(Math.abs(k)):'','600 30px '+F,k>0?RED:GRN)}
+ y+=80;txt('Terima kasih',W/2,'52px "EnglandSig",cursive','#b08d57','center');y+=38;
+ txt("©Dim's 081993360992",W/2,'400 17px '+F,MUT,'center');
+ var h=y+36,c2=document.createElement('canvas');c2.width=W;c2.height=h;var z=c2.getContext('2d');z.fillStyle='#fffefb';z.fillRect(0,0,W,h);z.drawImage(c,0,0);
+ var url=c2.toDataURL('image/jpeg',.92),ids=E.map(function(e){return e.id}),uid=u.id;
+ c2.toBlob(function(b){LN={url:url,file:new File([b],'nota-gabungan.jpg',{type:'image/jpeg'}),ids:ids,u:uid};pvm(url)},'image/jpeg',.92)}
 function months(){var m={};st.lun.concat(st.hist).forEach(function(h){m[h.at.slice(0,7)]=1});return Object.keys(m).sort().reverse()}
 function ml(k){var p=k.split('-');return MO[+p[1]-1]+' '+p[0]}
 function inM(h){return !fm||h.at.slice(0,7)==fm}
@@ -842,6 +873,7 @@ function doSave(stay,ns){var u=cu(),E=st.data[u.id],cr=st.carry[u.id]||0,crp0=st
  st.hist.unshift({id:Date.now(),u:u.id,n:u.n,c:u.c,at:td(),e:E.slice(),pays:P.slice(),cr:cr,crp:crp0,cf:rem>0?rem:0});st.data[u.id]=[];st.pays[u.id]=[];st.carry[u.id]=rem>0?rem:0;st.carryP[u.id]=rem>0?sumP(P):0;
  
  save();render();document.getElementById('ov').style.display='none';if(!stay)nav(3)}
+document.getElementById('gab').onclick=notaGab;
 document.getElementById('im').onclick=function(){var u=cu();if(!st.data[u.id].length&&!st.carry[u.id])return;nota(spec(u.n,u.c,st.data[u.id],st.pays[u.id],st.carry[u.id],st.carryP[u.id],1,tglCrp(u.id,st.carryP[u.id])))};
 document.getElementById('un').onclick=function(){if(!undo.length)return;redo.push(JSON.stringify(st));rest(undo.pop())};
 document.getElementById('re').onclick=function(){if(!redo.length)return;undo.push(JSON.stringify(st));rest(redo.pop())};
